@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steroid Pathway Trainer</title>
+<style>
+:root{--bg:#0d1117;--bg2:#111823;--panel:#161c26;--ink:#e9eef5;--muted:#8d98a8;--line:#2a3340;--edge:#465264;--accent:#4cc2ff;
+  --good:#3ddc97;--bad:#ff6b6b;--warn:#ffc857;--chip:#1f2733;
+  --k-prog:#f2c14e;--k-mc:#b78cff;--k-gc:#4fd1a1;--k-and:#5aa9ff;--k-est:#ff7eb6;--k-ster:#9aa5b1;
+  --zc:#8f99a6;--zg:#b78cff;--zf:#4fd1a1;--zr:#5aa9ff;--zx:#c39bff;--zo:#69c06a;--ze:#ff7eb6;--mito:#6b2f3a;--er:#1d4f41;}
+:root[data-theme="light"]{--bg:#eef1f6;--bg2:#e6eaf1;--panel:#fff;--ink:#17202b;--muted:#5b6777;--line:#d3dae4;--edge:#8794a6;--accent:#0b7fd1;
+  --good:#128a57;--bad:#c93636;--warn:#a06a00;--chip:#edf0f5;
+  --k-prog:#c28a00;--k-mc:#7b4fd6;--k-gc:#1a9a6c;--k-and:#2b78d4;--k-est:#d6408a;--k-ster:#6b7684;
+  --zc:#7a8593;--zg:#7b4fd6;--zf:#1a9a6c;--zr:#2b78d4;--zx:#9a6ad8;--zo:#3f9a44;--ze:#d6408a;--mito:#f7c9c3;--er:#c9ebcd;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,var(--bg2),var(--bg));background-attachment:fixed;color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;min-height:100vh}
+.wrap{max-width:1320px;margin:0 auto;padding:18px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+h1{font-size:21px;margin:0;letter-spacing:-.01em;font-weight:750}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--k-prog),var(--k-gc),var(--k-and),var(--k-est));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:12px;margin:24px 0 10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stat{background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:5px 12px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;line-height:1.25;text-align:center}
+.stat b{display:block;font-size:17px;color:var(--ink);letter-spacing:0;font-variant-numeric:tabular-nums}
+button,select,input{font:inherit;color:var(--ink);background:var(--chip);border:1px solid var(--line);border-radius:9px;padding:7px 12px}
+input{background:var(--bg)}
+select{-webkit-appearance:none;appearance:none;padding-right:30px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+button{cursor:pointer;transition:transform .08s,border-color .15s,background .15s}
+button:hover{border-color:var(--accent)}
+button:active{transform:scale(.97)}
+button.primary{background:var(--accent);color:#06121c;border-color:var(--accent);font-weight:700}
+:root[data-theme="light"] button.primary{color:#fff}
+button.ghost{background:transparent;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.lvl{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:block;width:100%;position:relative;overflow:hidden}
+.lvl:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.lvl .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;min-height:50px}
+.lvl b{display:block;font-size:15.5px}
+.lvl span{display:block;color:var(--muted);font-size:12.5px;margin-top:3px}
+.lvl i{display:inline-block;margin-top:9px;font-style:normal;font-size:11.5px;padding:2px 9px;border-radius:10px;background:var(--chip);color:var(--muted)}
+.ring{width:46px;height:46px;flex:none}
+.ring circle{fill:none;stroke-width:5}
+.ring .bg{stroke:var(--chip)} .ring .fg{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:center}
+.ring text{font-size:11px;font-weight:700;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+.mini{height:50px;width:auto;flex:none}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar .sp{flex:1}
+.prompt{font-size:17px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.chip{background:var(--chip);border:1px solid var(--line);border-radius:18px;padding:6px 13px;font-size:13.5px}
+.chip:hover{background:color-mix(in srgb,var(--accent) 18%,var(--chip))}
+.fb{min-height:22px;font-size:14px;margin-top:10px;font-weight:600}
+.fb.good{color:var(--good)} .fb.bad{color:var(--bad)} .fb.warn{color:var(--warn)}
+#ans{width:min(380px,100%)}
+.note{background:var(--chip);border-left:3px solid var(--warn);padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:10px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend u{text-decoration:none;font-weight:700;color:var(--ink);margin-right:2px}
+.weak{font-size:13px;color:var(--muted)}
+.explain{font-size:14.5px;margin-top:10px;line-height:1.6}
+.explain b{color:var(--warn)}
+.pheno{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:13.5px}
+.pheno label{display:flex;flex-direction:column;gap:3px;color:var(--muted)}
+.pheno select.ok{border-color:var(--good)} .pheno select.no{border-color:var(--bad)}
+.mapbox{overflow-x:auto;margin-top:12px;background:radial-gradient(900px 500px at 50% 0%,color-mix(in srgb,var(--accent) 5%,var(--panel)),var(--panel));border:1px solid var(--line);border-radius:16px;padding:6px}
+.mapbox svg{display:block;width:100%;min-width:960px;height:auto}
+svg text{font-family:inherit;fill:var(--ink)}
+.k-prog{--k:var(--k-prog)} .k-mc{--k:var(--k-mc)} .k-gc{--k:var(--k-gc)} .k-and{--k:var(--k-and)} .k-est{--k:var(--k-est)} .k-ster{--k:var(--k-ster)}
+.node{transform-box:fill-box;transform-origin:center}
+.node rect{fill:color-mix(in srgb,var(--k) 26%,var(--panel));stroke:var(--k);stroke-width:1.8;rx:10}
+.node text{font-size:12px;font-weight:650;text-anchor:middle;dominant-baseline:central}
+.node.blank rect{stroke:var(--edge);stroke-dasharray:5 4;fill:var(--chip)}
+.node.blank text{fill:var(--muted)}
+.node.active rect,.elab.active rect{stroke:var(--accent);stroke-width:3;stroke-dasharray:none;filter:drop-shadow(0 0 7px var(--accent))}
+.node.clicky,.elab.clicky{cursor:pointer}
+.node.clicky:hover rect,.elab.clicky:hover rect{stroke:var(--accent)}
+.node.revealed rect,.elab.revealed rect{stroke:var(--warn);stroke-dasharray:2 3}
+.node.right rect{fill:color-mix(in srgb,var(--good) 30%,var(--panel));stroke:var(--good)}
+.node.wrong rect{fill:color-mix(in srgb,var(--bad) 45%,var(--panel));stroke:var(--bad);stroke-width:3.2;filter:drop-shadow(0 0 6px var(--bad))}
+.node.wrong .arrow{fill:var(--ink)}
+.node .arrow{font-size:16px;font-weight:800}
+.node.dim{opacity:.42}
+.node.locked{opacity:.3} .node.locked rect{stroke-dasharray:3 4;fill:var(--chip);stroke:var(--edge)}
+.node.swell rect{transform-box:fill-box;transform-origin:center;animation:swell 1.3s ease-in-out infinite;stroke-width:3;filter:drop-shadow(0 0 8px var(--k))}
+.node.pop rect,.elab.pop rect{transform-box:fill-box;transform-origin:center;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.node.miss rect,.elab.miss rect{animation:miss .4s}
+.node.lit{animation:lit .5s both}
+.edge{stroke:var(--edge);stroke-width:1.6;fill:none}
+.edge.live{stroke:color-mix(in srgb,var(--accent) 45%,var(--edge));stroke-width:2}
+.edge.blocked{stroke:var(--bad);stroke-width:2.8;stroke-dasharray:6 4;filter:drop-shadow(0 0 4px var(--bad))}
+.elab rect{fill:var(--chip);stroke:var(--line);stroke-width:1.2;rx:9.5}
+.elab text{font-size:10.5px;font-weight:600;text-anchor:middle;dominant-baseline:central;fill:var(--ink)}
+.elab.mito rect{fill:var(--mito)} .elab.er rect{fill:var(--er)}
+.elab.blank rect{stroke-dasharray:4 3;fill:var(--chip);stroke:var(--edge)}
+.elab.blank text{fill:var(--muted)}
+.elab.blocked rect{stroke:var(--bad);stroke-width:2} .elab.blocked text{fill:var(--bad);font-weight:800}
+.band{stroke-width:1;stroke-opacity:.35;fill-opacity:.07}
+.zlab{font-size:9px;font-weight:700;letter-spacing:.1em;fill-opacity:.85}
+.flux{filter:drop-shadow(0 0 4px currentColor)}
+@keyframes swell{0%,100%{transform:scale(1)}50%{transform:scale(1.07,1.22)}}
+@keyframes pop{0%{transform:scale(.6);opacity:.3}100%{transform:scale(1);opacity:1}}
+@keyframes miss{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px);stroke:var(--bad)}40%{transform:translateX(6px);stroke:var(--bad)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes lit{from{opacity:.1;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.node.swell rect,.node.pop rect,.elab.pop rect,.node.miss rect,.elab.miss rect,.node.lit{animation:none}}
+.mol{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.mol svg{width:230px;min-width:0;flex:none}
+.mol svg line{stroke:var(--ink);stroke-width:1.4;stroke-linecap:round}
+.mol svg text{font-size:9.5px}
+.mol svg text.cnum{font-size:6.5px;fill:var(--muted)}
+.mol svg .hi{fill:var(--accent);fill-opacity:.28;stroke:var(--accent);stroke-width:1.5}
+.mol .arr{text-align:center;font-size:22px;color:var(--accent)}
+.mol .txt{flex:1;min-width:220px;font-size:14px}
+.mol .txt b{font-size:15.5px}
+#result{font-size:22px}
+footer{margin-top:28px;color:var(--muted);font-size:11.5px;line-height:1.5;opacity:.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>Steroid <em>Pathway</em> Trainer</h1><div class="sub">Rebuild adrenal steroidogenesis from memory, then break it one enzyme at a time.</div></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar"><span id="acct" class="bar"></span><button class="ghost" id="btnTheme">Light theme</button><button id="btnHome">Home</button></div>
+</header>
+<div id="authbox"></div>
+<div id="note"></div>
+<div id="view"></div>
+<footer>Estrogens, androstenediol, steroid classes with carbon counts and enzyme locations follow the Wikimedia Commons diagram File:Steroidogenesis.svg. Structures on the molecule cards: molecular formula and functional groups of the original 27 steroids, and molecular formula of the 4 added later, matched PubChem records on 2026-11-10. Independent source audit 2026-11-10 (Endotext, four Zotero reviews, Wikipedia diagram). Kept by decision after that audit: steroids downstream of a complete block are scored low by pathway logic even where no source lists them; the genitalia answers for isolated 17,20-lyase deficiency are inferred from the low androgens; and its normal cortisol and aldosterone are tested as unchanged. Block-round estrogen and androstenediol scoring: Endotext; Sarafoglou 2023, Al Alawi 2019, Cavarzere 2025 and Gurpinar Tosun 2024 (Zotero library); Blackett 1996 (PMID 15251547). PubMed cross-check 2026-11-10 (abstract level): PMID 21051590, 26960203, 38885296, 18821019, 21084398, 21802064, 16959841, 27626911, 24372086, 33123976. Fact source: Endotext, Congenital Adrenal Hyperplasia (Speiser &amp; White, updated January 20, 2026), Table 1 and Figure 1, plus the Androgen Biosynthesis sheet in the vault. The map layout never changes between levels, on purpose: position is part of the memory. Progress is stored in this browser, and in your account if you sign in. This is a study aid for clinicians and trainees, not clinical guidance. An account stores only your email address and your game progress.</footer>
+</div>
+<script>
+'use strict';
+/* ================= DATA ================= */
+// Node: [id, map label, full name, col, row, zone, tier, aliases]
+const NODES = [
+ ['chol','Cholesterol','Cholesterol',0,0,'c','core',['cholesterol','chol']],
+ ['preg','Pregnenolone','Pregnenolone',0,1,'c','core',['pregnenolone','preg','P5']],
+ ['p17','17-OH pregnenolone','17-hydroxypregnenolone',1,1,'f','core',['17-hydroxypregnenolone','17α-hydroxypregnenolone','17-OH preg','17OHPreg','17-pregnenolone','17OH-P5']],
+ ['dhea','DHEA','Dehydroepiandrosterone (DHEA)',3,1,'r','core',['DHEA','dehydroepiandrosterone']],
+ ['prog','Progesterone','Progesterone',0,2,'c','core',['progesterone','prog','P4']],
+ ['ohp','17-OH progesterone','17-hydroxyprogesterone (17-OHP)',1,2,'f','core',['17-hydroxyprogesterone','17α-hydroxyprogesterone','17-OHP','17OH prog','17P']],
+ ['a4','Androstenedione','Androstenedione',3,2,'r','core',['androstenedione','A4','Δ4-androstenedione','Δ4A','4-androstenedione']],
+ ['t','Testosterone','Testosterone',4,2,'r','core',['testosterone','T','testo']],
+ ['dht','DHT','Dihydrotestosterone (DHT)',5,2,'r','core',['DHT','dihydrotestosterone','5α-dihydrotestosterone','5α-DHT']],
+ ['doc','11-Deoxycorticosterone','11-deoxycorticosterone (DOC)',0,3,'g','core',['11-deoxycorticosterone','deoxycorticosterone','DOC']],
+ ['s','11-Deoxycortisol','11-deoxycortisol (compound S)',1,3,'f','core',['11-deoxycortisol','deoxycortisol','compound S','S']],
+ ['b','Corticosterone','Corticosterone (compound B)',0,4,'g','core',['corticosterone','compound B','B']],
+ ['f','Cortisol','Cortisol (compound F)',1,4,'f','core',['cortisol','hydrocortisone','compound F','F']],
+ ['b18','18-OH corticosterone','18-hydroxycorticosterone',0,5,'g','core',['18-hydroxycorticosterone','18-OH-B','18OHB']],
+ ['aldo','Aldosterone','Aldosterone',0,6,'g','core',['aldosterone','aldo']],
+ // advanced
+ ['dheas','DHEA-S','DHEA sulfate',3,0,'r','adv',['DHEA-S','DHEA sulfate','dehydroepiandrosterone sulfate','DHEA sulphate']],
+ ['df21','21-Deoxycortisol','21-deoxycortisol',2,3,'f','adv',['21-deoxycortisol','21-DF','21-deoxy']],
+ ['e','Cortisone','Cortisone (compound E)',2,4,'f','adv',['cortisone','compound E','E']],
+ ['oha4','11-OH androstenedione','11β-hydroxyandrostenedione',3,3,'o','adv',['11-hydroxyandrostenedione','11β-hydroxyandrostenedione','11OHA4','11OHA','11-OH-A4']],
+ ['oht','11-OH testosterone','11β-hydroxytestosterone',4,3,'o','adv',['11-hydroxytestosterone','11β-hydroxytestosterone','11OHT','11-OH-T']],
+ ['ka4','11-Ketoandrostenedione','11-ketoandrostenedione',3,4,'o','adv',['11-ketoandrostenedione','11KA4','11KA','11-keto-A4','11-oxoandrostenedione']],
+ ['kt','11-Ketotestosterone','11-ketotestosterone',4,4,'o','adv',['11-ketotestosterone','11KT','11-keto-T','11-oxotestosterone']],
+ ['kdht','11-Keto-DHT','11-ketodihydrotestosterone',4,5,'o','adv',['11-ketodihydrotestosterone','11KDHT','11-keto-DHT','11-oxo-DHT']],
+ ['dhp17','17-OH-DHP','17α-hydroxydihydroprogesterone (5α-pregnane-17α-ol-3,20-dione)',1,6,'x','adv',['17-hydroxydihydroprogesterone','17α-hydroxydihydroprogesterone','17-OH-DHP','17OH-dihydroprogesterone','5α-pregnane-17α-ol-3,20-dione','pdione']],
+ ['allo17','17-OH allopregnanolone','17α-hydroxyallopregnanolone (5α-pregnane-3α,17α-diol-20-one)',2,6,'x','adv',['17-hydroxyallopregnanolone','17α-hydroxyallopregnanolone','17-OH-allo','5α-pregnane-3α,17α-diol-20-one','pdiol']],
+ ['andst','Androsterone','Androsterone',3,6,'x','adv',['androsterone']],
+ ['adiol','Androstanediol','3α-androstanediol',4,6,'x','adv',['androstanediol','3α-androstanediol','3α-diol','adiol','5α-androstane-3α,17β-diol']],
+ // sex steroids (Wikipedia Steroidogenesis diagram)
+ ['adiol5','Androstenediol','Androstenediol (androst-5-ene-3β,17β-diol)',4,1,'r','sex',['androstenediol','5-androstenediol','Δ5-androstenediol','androst-5-ene-3β,17β-diol','A5']],
+ ['e1','Estrone','Estrone (E1)',6,1,'e','sex',['estrone','E1','oestrone']],
+ ['e2','Estradiol','Estradiol (E2)',6,2,'e','sex',['estradiol','E2','17β-estradiol','oestradiol']],
+ ['e3','Estriol','Estriol (E3)',6,3,'e','sex',['estriol','E3','oestriol']],
+];
+// Enzyme: id -> [map label, chip text, aliases]
+const ENZ = {
+ scc:['StAR · CYP11A1','StAR + CYP11A1 · side-chain cleavage',['StAR','CYP11A1','P450scc','scc','side-chain cleavage','cholesterol side-chain cleavage','side-chain cleavage enzyme','desmolase','StAR/CYP11A1','CYP11A1/StAR','StAR and CYP11A1','steroidogenic acute regulatory protein','StAR + P450scc']],
+ hsd3b2:['HSD3B2','HSD3B2 · 3β-HSD type 2',['HSD3B2','3β-HSD','3β-HSD2','3β-HSD type 2','3β-hydroxysteroid dehydrogenase','3β-hydroxysteroid dehydrogenase type 2','3β-hydroxysteroid dehydrogenase/Δ5-Δ4 isomerase','3β-hydroxysteroid dehydrogenase/Δ5-Δ4 isomerase type 2']],
+ oh17:['CYP17A1','CYP17A1 · 17α-hydroxylase',['CYP17A1','17α-hydroxylase','P450c17','17α-OH','CYP17','steroid 17α-hydroxylase','17α-hydroxylase/17,20-lyase']],
+ lyase:['CYP17A1','CYP17A1 · 17,20-lyase',['CYP17A1','17,20-lyase','lyase','P450c17','C17,20-lyase','CYP17']],
+ cyp21:['CYP21A2','CYP21A2 · 21-hydroxylase',['CYP21A2','CYP21','21-hydroxylase','P450c21','21-OH','steroid 21-hydroxylase']],
+ b1:['CYP11B1','CYP11B1 · 11β-hydroxylase',['CYP11B1','11β-hydroxylase','P450c11','P450c11β','11β-OH','steroid 11β-hydroxylase']],
+ b2:['CYP11B2','CYP11B2 · aldosterone synthase',['CYP11B2','aldosterone synthase','P450aldo','P450c11AS','aldo synthase']],
+ hsd17b:['17β-HSD','HSD17B3 / AKR1C3 · 17β-HSD',['HSD17B3','AKR1C3','17β-HSD','17β-hydroxysteroid dehydrogenase','17-ketosteroid reductase','17KSR','17β-HSD3','17β-HSD5','HSD17B5','HSD17B3/AKR1C3','AKR1C3/HSD17B3']],
+ hsd17b1:['17β-HSD','HSD17B1 · 17β-HSD type 1',['HSD17B1','17β-HSD1','17β-HSD type 1','17β-HSD','17β-hydroxysteroid dehydrogenase','17β-hydroxysteroid dehydrogenase type 1','AKR1C3','HSD17B5','17β-HSD5']],
+ akr1c3:['AKR1C3','AKR1C3 · 17β-HSD type 5',['AKR1C3','17β-HSD5','17β-HSD type 5','HSD17B5','17β-HSD','17β-hydroxysteroid dehydrogenase','17-ketosteroid reductase','17KSR']],
+ srd5a2:['SRD5A2','SRD5A2 · 5α-reductase type 2',['SRD5A2','5α-reductase','5α-reductase type 2','5α-reductase 2','5AR2','5AR','steroid 5α-reductase','steroid 5α-reductase type 2']],
+ srd5a1:['SRD5A1','SRD5A1 · 5α-reductase type 1',['SRD5A1','5α-reductase','5α-reductase type 1','5α-reductase 1','5AR1','5AR','SRD5A1/2','steroid 5α-reductase','steroid 5α-reductase type 1']],
+ hsd11b2:['HSD11B2','HSD11B2 · 11β-HSD type 2',['HSD11B2','11β-HSD2','11β-HSD','11β-HSD type 2','11β-hydroxysteroid dehydrogenase','11β-hydroxysteroid dehydrogenase type 2']],
+ aro:['CYP19A1','CYP19A1 · aromatase',['CYP19A1','aromatase','P450aro','CYP19','cytochrome P450 aromatase']],
+ oh16:['16α-OH','16α-hydroxylation · liver and placenta',['16α-hydroxylase','16α-hydroxylation','16-hydroxylase','16α-OH','liver and placenta']],
+ sult:['SULT2A1','SULT2A1 · sulfotransferase',['SULT2A1','sulfotransferase','DHEA sulfotransferase']],
+ akr:['AKR1C2/4','AKR1C2/4 · reductive 3α-HSD',['AKR1C2','AKR1C4','AKR1C2/4','AKR1C2/AKR1C4','AKR1C','3α-HSD','3α-hydroxysteroid dehydrogenase']],
+ hsd17b6:['HSD17B6','HSD17B6 · oxidative 3α-HSD',['HSD17B6','17β-HSD6','17β-hydroxysteroid dehydrogenase type 6','RoDH','retinol dehydrogenase','3α-oxidase','oxidative 3α-HSD','AKR1C2/HSD17B6']],
+};
+// Edge: [id, from, to, accepted enzyme ids (first = shown on map), tier, opts]
+const EDGES = [
+ ['e1','chol','preg',['scc'],'core'],
+ ['e5','preg','p17',['oh17'],'core'],
+ ['e7','p17','dhea',['lyase'],'core'],
+ ['e2','preg','prog',['hsd3b2'],'core'],
+ ['e3','p17','ohp',['hsd3b2'],'core'],
+ ['e4','dhea','a4',['hsd3b2'],'core'],
+ ['e6','prog','ohp',['oh17'],'core'],
+ ['e8','prog','doc',['cyp21'],'core'],
+ ['e9','ohp','s',['cyp21'],'core'],
+ ['e10','doc','b',['b2','b1'],'core',{label:'CYP11B2 (ZG) · CYP11B1 (ZF)',clabel:'Aldo synthase · 11β-OHase'}],
+ ['e11','s','f',['b1'],'core'],
+ ['e12','b','b18',['b2'],'core',{extra:['18-hydroxylase']}],
+ ['e13','b18','aldo',['b2'],'core',{extra:['18-oxidase','18-methyl oxidase']}],
+ ['e14','a4','t',['hsd17b'],'core'],
+ ['e15','t','dht',['srd5a2'],'core',{ldown:1}],
+ ['a1','dhea','dheas',['sult'],'adv'],
+ ['a2','ohp','df21',['b1'],'adv'],
+ ['a3','f','e',['hsd11b2'],'adv'],
+ ['a4','a4','oha4',['b1'],'adv'],
+ ['a5','t','oht',['b1'],'adv'],
+ ['a6','oha4','ka4',['hsd11b2'],'adv'],
+ ['a7','oht','kt',['hsd11b2'],'adv'],
+ ['a8','ka4','kt',['akr1c3'],'adv',{clabel:'17β-HSD5'}],
+ ['a9','kt','kdht',['srd5a2'],'adv'],
+ ['x1','ohp','dhp17',['srd5a1','srd5a2'],'adv',{via:'backIn'}],
+ ['x2','dhp17','allo17',['akr'],'adv'],
+ ['x3','allo17','andst',['lyase'],'adv'],
+ ['x4','andst','adiol',['hsd17b'],'adv'],
+ ['x5','adiol','dht',['hsd17b6'],'adv',{via:'backOut',extra:['AKR1C2']}],
+ ['s1','ohp','a4',['lyase'],'sex'],
+ ['s2','dhea','adiol5',['hsd17b'],'sex'],
+ ['s3','adiol5','t',['hsd3b2'],'sex'],
+ ['s4','a4','e1',['aro'],'sex',{via:'aroA'}],
+ ['s5','t','e2',['aro'],'sex',{via:'aroT'}],
+ ['s6','e1','e2',['hsd17b1'],'sex'],
+ ['s7','e2','e3',['oh16'],'sex'],
+ ['s8','e1','e3',['oh16'],'sex',{via:'e1e3',deco:1}],
+];
+// Full enzyme names, enzyme-name map labels, and cellular location (mito / er). Location is given only where Endotext states it; 17β-HSD and 5α-reductase are left blank.
+const FULL = {
+ scc:'Steroidogenic acute regulatory protein (StAR) plus cholesterol side-chain cleavage enzyme (P450scc, CYP11A1)',
+ hsd3b2:'3β-hydroxysteroid dehydrogenase/Δ5-Δ4 isomerase type 2 (HSD3B2)',
+ oh17:'Steroid 17α-hydroxylase/17,20-lyase (P450c17, CYP17A1), 17α-hydroxylase activity',
+ lyase:'Steroid 17α-hydroxylase/17,20-lyase (P450c17, CYP17A1), 17,20-lyase activity',
+ cyp21:'Steroid 21-hydroxylase (P450c21, CYP21A2)',
+ b1:'Steroid 11β-hydroxylase (P450c11β, CYP11B1)',
+ b2:'Aldosterone synthase (P450aldo, CYP11B2)',
+ hsd17b:'17β-hydroxysteroid dehydrogenase (HSD17B3 in the testis; AKR1C3, also called 17β-HSD type 5, in the adrenal and peripheral tissues)',
+ hsd17b1:'17β-hydroxysteroid dehydrogenase type 1 (HSD17B1); AKR1C3 (17β-HSD type 5) can also do this step',
+ akr1c3:'Aldo-keto reductase family 1 member C3 (AKR1C3), also called 17β-hydroxysteroid dehydrogenase type 5',
+ srd5a2:'Steroid 5α-reductase type 2 (SRD5A2)', srd5a1:'Steroid 5α-reductase type 1 (SRD5A1)',
+ hsd11b2:'11β-hydroxysteroid dehydrogenase type 2 (HSD11B2)',
+ sult:'Sulfotransferase family 2A member 1 (SULT2A1), the DHEA sulfotransferase',
+ akr:'Aldo-keto reductase family 1 members C2 and C4 (AKR1C2, AKR1C4), reductive 3α-hydroxysteroid dehydrogenases',
+ hsd17b6:'17β-hydroxysteroid dehydrogenase type 6 (HSD17B6), an oxidative 3α-hydroxysteroid dehydrogenase',
+ aro:'Aromatase (P450aro, CYP19A1)',
+ oh16:'16α-hydroxylation, in liver and placenta',
+};
+const COMMON = {scc:'StAR + P450scc',hsd3b2:'3β-HSD2',oh17:'17α-hydroxylase',lyase:'17,20-lyase',cyp21:'21-hydroxylase',b1:'11β-hydroxylase',b2:'Aldosterone synthase',
+ hsd17b:'17β-HSD',hsd17b1:'17β-HSD1',akr1c3:'17β-HSD5',srd5a2:'5α-reductase 2',srd5a1:'5α-reductase 1',hsd11b2:'11β-HSD2',sult:'Sulfotransferase',akr:'3α-HSD',hsd17b6:'17β-HSD6',aro:'Aromatase',oh16:'16α-hydroxylation'};
+const LOC = {scc:'mito',b1:'mito',b2:'mito',hsd3b2:'er',oh17:'er',lyase:'er',cyp21:'er',aro:'er'};
+const LOCNAME = {mito:'Mitochondria',er:'Endoplasmic reticulum'};
+// Steroid class with carbon count (Wikipedia diagram groupings).
+const KLASS = {ster:'Sterol precursor (27 carbons)',prog:'Progestagen (21 carbons)',mc:'Mineralocorticoid (21 carbons)',gc:'Glucocorticoid (21 carbons)',and:'Androgen (19 carbons)',est:'Estrogen (18 carbons)'};
+const KOF = {chol:'ster',preg:'prog',p17:'prog',prog:'prog',ohp:'prog',dhp17:'prog',allo17:'prog',doc:'mc',b:'mc',b18:'mc',aldo:'mc',s:'gc',f:'gc',df21:'gc',e:'gc',e1:'est',e2:'est',e3:'est'};
+const klassOf = id => KOF[id]||'and';
+// Corticosterone sits on the mineralocorticoid pathway but is itself a weak glucocorticoid (Endotext p.5): both classes are accepted.
+const klassText = id => id==='b'?'Mineralocorticoid pathway (21 carbons); itself a weak glucocorticoid':KLASS[klassOf(id)];
+const klassAns = id => id==='b'?[KLASS.mc,KLASS.gc]:[KLASS[klassOf(id)]];
+// CAH disorders. up/down are required marks on the classic map (core + sex tiers); upok = up or unmarked accepted (down is wrong); dnok = down or unmarked accepted (up is wrong); opt = either answer accepted.
+// mc / xx / xy follow Endotext Table 1, except 17OH and lyase deficiency (Table 1 says "variable"), which follow the chapter body text.
+const DIS = [
+ {id:'d21',name:'21-hydroxylase deficiency, classic salt wasting',gene:'CYP21A2',enz:'cyp21',block:['e8','e9'],
+  up:['ohp','a4','prog','p17','t'],down:['doc','b','b18','aldo','s','f'],opt:['chol','preg','dhea','dht','adiol5','e1','e2','e3'],
+  mc:'Salt wasting',xx:'Virilized',xy:'Typical male',
+  why:'Both 21-hydroxylations fail, so nothing reaches cortisol or aldosterone. <b>17-OHP</b> piles up behind the block, along with progesterone and 17-OH pregnenolone, and spills sideways into androgens (<b>androstenedione</b>), which virilizes the 46,XX fetus. Lost aldosterone gives high K and low Na. 21-deoxycortisol (17-OHP hydroxylated by CYP11B1) is the other specific marker, on the advanced map. Testosterone rises with the androstenedione in 46,XX and prepubertal patients; in an untreated adult male it can be low-normal because the adrenal androgens suppress gonadotropins (Sarafoglou 2023). Estrone and estradiol can rise as well, through aromatization of the excess androgens (Sarafoglou 2023; Blackett 1996, PMID 15251547), but the size of that rise varies, so the estrogens are not tested.'},
+ {id:'d11',name:'11β-hydroxylase deficiency',gene:'CYP11B1',enz:'b1',block:['e11','e10'],blockLabel:{e10:'✕ CYP11B1 · CYP11B2 intact'},
+  up:['doc','s','ohp','a4','t'],down:['f','b','aldo'],opt:['chol','preg','p17','dhea','prog','dht','b18','adiol5','e1','e2','e3'],
+  mc:'Low-renin hypertension',xx:'Virilized',xy:'Typical male',
+  why:'The last step to cortisol fails, and so does DOC to corticosterone in the fasciculata. <b>11-deoxycortisol (S)</b> and <b>DOC</b> accumulate, with 17-OHP rising behind them. DOC is a mineralocorticoid, so instead of salt wasting you get low-renin hypertension. CYP11B2 in the glomerulosa is intact: aldosterone falls only because DOC suppresses renin, which is why the map crosses that arrow for the fasciculata enzyme alone. Precursors shunt to androgens (androstenedione and testosterone), virilizing the 46,XX fetus. As in 21-hydroxylase deficiency, aromatization of the excess androgens can raise estrogens enough to cause gynecomastia (Blackett 1996, PMID 15251547), but the estrogens are not tested.'},
+ {id:'d17',name:'17α-hydroxylase/17,20-lyase deficiency',gene:'CYP17A1',enz:'oh17',block:['e5','e6','e7','s1'],
+  up:['doc','b','prog'],down:['p17','ohp','s','f','dhea','a4','t','dht','adiol5','e1','e2','e3'],opt:['chol','preg','b18','aldo'],
+  mc:'Low-renin hypertension',xx:'Typical female',xy:['Under-virilized','Female-typical'],
+  why:'Nothing can move right off the first column, so there is no cortisol and no sex steroid: androgens and the estrogens made from them are both low. ACTH drives the 17-deoxy pathway: <b>Progesterone, DOC</b> and <b>corticosterone</b> rise. Corticosterone covers the glucocorticoid need, DOC causes low-renin hypertension. 46,XY infants are under-virilized, and female-typical when the deficiency is complete; neither sex enters puberty.'},
+ {id:'dly',name:'Isolated 17,20-lyase deficiency',gene:'CYP17A1',enz:'lyase',block:['e7','s1'],
+  up:[],down:['dhea','a4','t','dht','adiol5','e1','e2','e3'],opt:['chol','preg','p17','ohp'],
+  mc:'None',xx:'Typical female',xy:'Under-virilized',
+  why:'17α-hydroxylase activity is intact, so cortisol and aldosterone are normal. Only the lyase step to <b>DHEA</b> is lost, taking every androgen (and estrogen) downstream with it.'},
+ {id:'d3b',name:'3β-HSD type 2 deficiency',gene:'HSD3B2',enz:'hsd3b2',block:['e2','e3','e4','s3'],
+  up:['preg','p17','dhea'],down:['prog','doc','b','b18','aldo','s','f','a4'],opt:['chol','ohp','t','dht','adiol5','e1','e2','e3'],
+  mc:'Salt wasting',xx:'Mild or absent virilization',xy:'Under-virilized',
+  why:'Nothing can move down off the top row. The Δ5 steroids <b>pregnenolone, 17-OH pregnenolone and DHEA</b> accumulate. No cortisol, no aldosterone (salt wasting). The large DHEA load is weakly androgenic and is converted peripherally, which virilizes 46,XX infants only mildly, and sometimes not at all, while 46,XY infants lack enough testosterone and are under-virilized. Testosterone is not tested: Endotext lists it as low, but peripheral conversion of the DHEA excess can leave it relatively high in girls (Al Alawi 2019). Androstenediol is a Δ5 substrate of the enzyme (Al Alawi 2019), but it is not tested because no source gives a serum level. DHEA may not be raised in the newborn period (PMID 27626911). Estrogens are not tested: adrenal and gonadal synthesis is impaired, but peripheral 3β-HSD type 1 can still turn the DHEA excess into sex steroids. 17-OHP is not tested: it can be elevated on the newborn screen through placental and peripheral 3β-HSD type 1 (PMID 27626911, 24372086), so a high 17-OHP does not exclude this diagnosis.'},
+ {id:'dst',name:'Lipoid CAH',gene:'STAR',enz:'scc',block:['e1'],
+  up:[],down:['preg','p17','dhea','prog','ohp','a4','t','dht','doc','s','b','f','b18','aldo','adiol5'],opt:['chol','e1','e2','e3'],
+  mc:'Salt wasting',xx:'Typical female',xy:'Female-typical',
+  why:'Cholesterol cannot enter the pathway, so <b>every steroid is low</b> and nothing accumulates except cholesterol itself, which fills the adrenal cells with lipid. Salt wasting, and female external genitalia regardless of karyotype. Estrogens are low with the rest (Cavarzere 2025) and fetoplacental estriol is low, but the ovary can later make some estrogen by StAR-independent routes, so 46,XX patients often enter puberty spontaneously. The estrogens are not tested. CYP11A1 (side-chain cleavage) deficiency blocks the same step, but without lipid accumulation or adrenal enlargement, and is often milder.'},
+ {id:'das',name:'Aldosterone synthase deficiency',gene:'CYP11B2',enz:'b2',block:['e12','e13'],
+  up:[],down:['aldo'],opt:['chol','doc','b','b18'],
+  mc:'Salt wasting',xx:'Typical female',xy:'Typical male',
+  why:'Only the zona glomerulosa is affected. <b>Aldosterone</b> is low with salt wasting. Cortisol and androgens are untouched, so genitalia are typical. Corticosterone is still made in the fasciculata by CYP11B1.'},
+];
+const MC_OPTS=['Salt wasting','Low-renin hypertension','None'], XX_OPTS=['Virilized','Mild or absent virilization','Typical female'], XY_OPTS=['Typical male','Under-virilized','Female-typical'];
+// Name-the-defect cards. ans = accepted enzyme ids; extra = extra accepted strings.
+const CARDS = [
+ {id:'q21',ans:['cyp21'],clue:'Elevated 17-OHP and androstenedione. High K, low Na. 46,XX infant virilized at birth; 46,XY genitalia typical.',name:'21-hydroxylase (CYP21A2)'},
+ {id:'q11',ans:['b1'],clue:'Elevated DOC and 11-deoxycortisol (compound S), with androgen excess. Low-renin hypertension. 46,XX infant virilized.',name:'11β-hydroxylase (CYP11B1)'},
+ {id:'q17',ans:['oh17'],extra:['17-hydroxylase','17α-hydroxylase/17,20-lyase','17-hydroxylase/17,20-lyase'],clue:'Decreased androgens and estrogens, low cortisol. Elevated DOC and corticosterone with low-renin hypertension. No pubertal development.',name:'17α-hydroxylase/17,20-lyase (CYP17A1)'},
+ {id:'qly',ans:['lyase'],extra:['CYB5A','CYB5','cytochrome b5'],clue:'Decreased androgens and estrogens, but cortisol is normal and there is no mineralocorticoid effect. Which enzyme activity is lost?',name:'17,20-lyase activity of CYP17A1 (cytochrome b5, CYB5A, deficiency gives the identical picture)'},
+ {id:'q3b',ans:['hsd3b2'],clue:'Elevated DHEA and 17-OH pregnenolone; low androstenedione and testosterone. High K, low Na. 46,XX mildly virilized, 46,XY under-virilized.',name:'3β-HSD type 2 (HSD3B2)'},
+ {id:'qst',ans:[],extra:['StAR','steroidogenic acute regulatory protein','lipoid CAH','lipoid'],clue:'All steroid products low. Salt wasting. Female external genitalia regardless of karyotype. Enlarged, lipid-laden adrenals.',name:'StAR: lipoid CAH (CYP11A1 deficiency is similar but without the lipid accumulation)'},
+ {id:'qas',ans:['b2'],clue:'Isolated low aldosterone with salt wasting. Cortisol normal, genitalia typical.',name:'Aldosterone synthase (CYP11B2)'},
+ {id:'qpor',ans:[],extra:['POR','P450 oxidoreductase','cytochrome P450 oxidoreductase','oxidoreductase','PORD','POR deficiency'],clue:'Partial, combined defects of 21-hydroxylase, 17α-hydroxylase/17,20-lyase and aromatase. 46,XX virilized with atypical genitalia, 46,XY under-virilized. No single P450 is mutated.',name:'P450 oxidoreductase (POR), the electron donor to microsomal P450s'},
+];
+const LEVELS = [
+ {id:'L1',t:'1 · Place the steroids',s:'Word bank. Enzymes shown.',tier:'sex',span:1,targets:'n',input:'bank'},
+ {id:'L2',t:'2 · Place the enzymes',s:'Word bank. Steroids shown.',tier:'sex',span:1,targets:'e',input:'bank'},
+ {id:'L3',t:'3 · Recall the steroids',s:'Typed. Enzymes hidden.',tier:'sex',span:1,targets:'n',input:'type',hideOther:true},
+ {id:'L4',t:'4 · Recall the enzymes',s:'Typed. Steroids shown.',tier:'sex',span:1,targets:'e',input:'type'},
+ {id:'L5',t:'5 · Blank map',s:'Type every steroid and every enzyme.',tier:'sex',span:1,targets:'ne',input:'type'},
+ {id:'X1',t:'6 · Sex steroids and estrogens',s:'Focused drill, word bank: only the estrogen and androstenediol steps.',tier:'sex',targets:'ne',input:'bank'},
+ {id:'X2',t:'7 · Sex steroids, typed',s:'Focused drill, typed: only the estrogen and androstenediol steps.',tier:'sex',targets:'ne',input:'type'},
+ {id:'L6',t:'8 · Advanced: backdoor and 11-oxo',s:'Word bank. Core map shown.',tier:'adv',targets:'ne',input:'bank'},
+ {id:'L7',t:'9 · Advanced, typed',s:'Backdoor, 11-oxo and peripheral steps from memory.',tier:'adv',targets:'ne',input:'type'},
+];
+
+// Structure features per steroid, drawn on the shared four-ring nucleus.
+// c3: bOH | aOH | keto | SO4.  db: d5 (C5=C6) | d4 (C4=C5) | none (5α-reduced).  c11: OH | keto.
+// c17: chain (cholesterol side chain) | acetyl (C20 ketone + C21) | keto | OH (17β).  oh17: 17α-hydroxyl.
+// c18: CH2OH | CHO (default methyl).  c21: CH3 | OH (only when a C20-C21 side chain exists).
+const F = {
+ chol:{c3:'bOH',db:'d5',c17:'chain',c21:'CH3'},
+ preg:{c3:'bOH',db:'d5',c17:'acetyl',c21:'CH3'},
+ p17:{c3:'bOH',db:'d5',c17:'acetyl',c21:'CH3',oh17:1},
+ dhea:{c3:'bOH',db:'d5',c17:'keto'},
+ dheas:{c3:'SO4',db:'d5',c17:'keto'},
+ prog:{c3:'keto',db:'d4',c17:'acetyl',c21:'CH3'},
+ ohp:{c3:'keto',db:'d4',c17:'acetyl',c21:'CH3',oh17:1},
+ a4:{c3:'keto',db:'d4',c17:'keto'},
+ t:{c3:'keto',db:'d4',c17:'OH'},
+ dht:{c3:'keto',db:'none',c17:'OH'},
+ doc:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH'},
+ s:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',oh17:1},
+ b:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',c11:'OH'},
+ f:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',oh17:1,c11:'OH'},
+ b18:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',c11:'OH',c18:'CH2OH'},
+ aldo:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',c11:'OH',c18:'CHO'},
+ df21:{c3:'keto',db:'d4',c17:'acetyl',c21:'CH3',oh17:1,c11:'OH'},
+ e:{c3:'keto',db:'d4',c17:'acetyl',c21:'OH',oh17:1,c11:'keto'},
+ oha4:{c3:'keto',db:'d4',c17:'keto',c11:'OH'},
+ oht:{c3:'keto',db:'d4',c17:'OH',c11:'OH'},
+ ka4:{c3:'keto',db:'d4',c17:'keto',c11:'keto'},
+ kt:{c3:'keto',db:'d4',c17:'OH',c11:'keto'},
+ kdht:{c3:'keto',db:'none',c17:'OH',c11:'keto'},
+ dhp17:{c3:'keto',db:'none',c17:'acetyl',c21:'CH3',oh17:1},
+ allo17:{c3:'aOH',db:'none',c17:'acetyl',c21:'CH3',oh17:1},
+ andst:{c3:'aOH',db:'none',c17:'keto'},
+ adiol:{c3:'aOH',db:'none',c17:'OH'},
+ adiol5:{c3:'bOH',db:'d5',c17:'OH'},
+ e1:{c3:'phOH',db:'aro',c17:'keto'},
+ e2:{c3:'phOH',db:'aro',c17:'OH'},
+ e3:{c3:'phOH',db:'aro',c17:'OH',c16:'OH'},
+};
+// What each enzyme does to the molecule (keyed by enzyme id, or by edge id where one enzyme does several things).
+const ACT = {
+ scc:'Cuts the C20–C22 bond, removing the six-carbon tail of the side chain (C27 → C21).',
+ oh17:'Adds a hydroxyl at C17.',
+ lyase:'Cuts the C17–C20 bond, leaving a 17-ketone (C21 → C19).',
+ hsd3b2:'Oxidizes the 3β-hydroxyl to a ketone and moves the double bond from C5–C6 to C4–C5 (Δ5 → Δ4).',
+ cyp21:'Adds a hydroxyl at C21.',
+ b1:'Adds a hydroxyl at C11.',
+ b2:'Adds a hydroxyl at C11.', e12:'Adds a hydroxyl at C18.', e13:'Oxidizes the C18 hydroxyl to an aldehyde.',
+ hsd17b:'Reduces the 17-ketone to a 17β-hydroxyl.', hsd17b1:'Reduces the 17-ketone to a 17β-hydroxyl.', akr1c3:'Reduces the 17-ketone to a 17β-hydroxyl.',
+ srd5a2:'Reduces the C4–C5 double bond (5α-reduction).', srd5a1:'Reduces the C4–C5 double bond (5α-reduction).',
+ hsd11b2:'Oxidizes the 11β-hydroxyl to an 11-ketone.',
+ sult:'Adds a sulfate to the 3β-hydroxyl.',
+ akr:'Reduces the 3-ketone to a 3α-hydroxyl.',
+ hsd17b6:'Oxidizes the 3α-hydroxyl back to a 3-ketone.',
+ aro:'Removes carbon 19 and aromatizes the A ring, turning the 3-ketone into a phenolic hydroxyl (19 carbons → 18 carbons).',
+ oh16:'Adds a hydroxyl at C16. The liver-and-placenta label is the Wikipedia diagram\'s wording. In pregnancy, estriol depends on DHEA from the fetal adrenal, which is why it is low in lipoid CAH and P450 oxidoreductase deficiency (Endotext).', s1:'Cuts the C17–C20 bond, leaving a 17-ketone (21 carbons → 19 carbons). Human 17,20-lyase handles this Δ4 substrate poorly, so it is a minor route normally, but high 17-OHP can drive it as an overflow path in 21-hydroxylase deficiency (Sarafoglou 2023).',
+};
+
+/* ================= HELPERS ================= */
+const N = {}, E = {};
+NODES.forEach(a=>N[a[0]]={id:a[0],label:a[1],name:a[2],c:a[3],r:a[4],z:a[5],tier:a[6],al:a[7]});
+EDGES.forEach(a=>E[a[0]]={id:a[0],from:a[1],to:a[2],acc:a[3],tier:a[4],o:a[5]||{}});
+function norm(s){return String(s).toLowerCase().replace(/α|alpha/g,'a').replace(/β|beta/g,'b').replace(/δ|delta/g,'d')
+  .replace(/hydroxy/g,'oh').replace(/[^a-z0-9]/g,'');}
+// Greek-stripped variant, except where the Greek letter is the only thing separating two enzymes (3α-HSD vs 3β-HSD).
+function forms(alias){return /^3[αβ]/.test(alias)?[norm(alias)]:[norm(alias), norm(alias.replace(/[αβΔδ]/g,''))];}
+const NODE_KEYS = {}; // normalized string -> node id
+Object.values(N).forEach(n=>[n.label,...n.al].forEach(a=>forms(a).forEach(k=>{NODE_KEYS[k]=n.id;})));
+const ENZ_KEYS = {}; // normalized string -> Set of enzyme ids
+Object.keys(ENZ).forEach(id=>ENZ[id][2].forEach(a=>forms(a).forEach(k=>{(ENZ_KEYS[k]=ENZ_KEYS[k]||new Set()).add(id);})));
+function matchNode(id,txt){return NODE_KEYS[norm(txt)]===id;}
+function matchEdge(id,txt){const k=norm(txt), e=E[id];
+  if((e.o.extra||[]).some(a=>forms(a).includes(k))) return true;
+  const s=ENZ_KEYS[k]; return !!s && e.acc.some(x=>s.has(x));}
+function matchCard(card,txt){const k=norm(txt);
+  if((card.extra||[]).some(a=>forms(a).includes(k))) return true;
+  const s=ENZ_KEYS[k]; return !!s && card.ans.some(x=>s.has(x));}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ================= PERSISTENCE ================= */
+const KEY='steroidPathwayTrainer.v1';
+let KEYA=KEY;   // active storage key: the guest key, or one key per signed-in account
+let Cloud=null; // account + cloud-save adapter, assigned further down
+const BEST_IDS=new Set(LEVELS.map(l=>l.id).concat(['block','name','sort']));
+function validKey(k){const m=/^([nedqlk]):([A-Za-z0-9]+)$/.exec(k); if(!m) return false; const id=m[2];
+  return (m[1]==='n'||m[1]==='k')?!!N[id]:m[1]==='e'?!!E[id]:m[1]==='d'?DIS.some(x=>x.id===id):m[1]==='q'?CARDS.some(x=>x.id===id):!!ENZ[id];}
+const nat=(v,max)=>{v=Math.floor(Number(v)); return Number.isFinite(v)&&v>=0?Math.min(v,max):0;};
+// Everything read from storage or the server passes through here: unknown keys are dropped and values are forced to bounded whole numbers.
+function cleanState(raw){const o={items:{},best:{},days:{},resetAt:0}; if(!raw||typeof raw!=='object') return o;
+  const it=raw.items; if(it&&typeof it==='object') Object.keys(it).forEach(k=>{const v=it[k]; if(validKey(k)&&v&&typeof v==='object') o.items[k]={seen:nat(v.seen,1e6),miss:nat(v.miss,1e6),streak:nat(v.streak,1e6)};});
+  const b=raw.best; if(b&&typeof b==='object') Object.keys(b).forEach(k=>{if(BEST_IDS.has(k)) o.best[k]=nat(b[k],100);});
+  const d=raw.days; if(d&&typeof d==='object') Object.keys(d).forEach(k=>{if(/^\d{4}-\d{2}-\d{2}$/.test(k)) o.days[k]=nat(d[k],1e6);});
+  o.resetAt=nat(raw.resetAt,1e15); return o;}
+const pickRec=(a,b)=>!a?b:!b?a:(a.seen!==b.seen?(a.seen>b.seen?a:b):a.miss!==b.miss?(a.miss>b.miss?a:b):(a.streak>=b.streak?a:b));
+// Merge two progress records. Idempotent and order-independent, so syncing twice or from two devices never inflates anything.
+// A reset stamps resetAt; the side with the older stamp is discarded, so a reset is not undone by another device.
+function mergeState(a,b){a=cleanState(a); b=cleanState(b); const r=Math.max(a.resetAt,b.resetAt), o={items:{},best:{},days:{},resetAt:r};
+  [a,b].filter(x=>x.resetAt===r).forEach(x=>{
+    Object.keys(x.items).forEach(k=>{o.items[k]=Object.assign({},pickRec(o.items[k],x.items[k]));});
+    Object.keys(x.best).forEach(k=>{o.best[k]=Math.max(o.best[k]||0,x.best[k]);});
+    Object.keys(x.days).forEach(k=>{o.days[k]=Math.max(o.days[k]||0,x.days[k]);});});
+  return o;}
+const hasProgress=st=>Object.keys(st.items||{}).length>0||Object.keys(st.best||{}).length>0;
+const prefsOf=st=>({names:st.names==='common'?'common':'gene',theme:st.theme==='dark'?'dark':'light',themeSet:st.themeSet===true});
+function loadState(key){let raw=null; try{raw=JSON.parse(localStorage.getItem(key));}catch(e){} const o=cleanState(raw); return raw&&typeof raw==='object'?Object.assign(o,prefsOf(raw)):o;}
+let S=Object.assign({names:'gene',theme:'light'},loadState(KEY));
+let canPersist=(function(){try{localStorage.setItem(KEY+'.p','1');const ok=localStorage.getItem(KEY+'.p')==='1';localStorage.removeItem(KEY+'.p');return ok;}catch(e){return false;}})();
+if(!S.themeSet) S.theme='light'; // light is the default unless the player has picked a theme
+function saveLocal(){ if(!canPersist) return; try{localStorage.setItem(KEYA,JSON.stringify(S));}catch(e){canPersist=false;} }
+function save(){ saveLocal(); if(Cloud) Cloud.schedule(); }
+function rec(key,ok){const it=S.items[key]=S.items[key]||{seen:0,miss:0,streak:0};
+  it.seen++; if(ok){it.streak++;} else {it.miss++; it.streak=0;}
+  S.days=S.days||{}; const tk=todayKey(); S.days[tk]=(S.days[tk]||0)+1; save(); renderHeader();}
+const isWeak=k=>{const it=S.items[k]; return !!it && it.miss>0 && it.streak<2;};
+function setBest(id,pct){ if(!(id in S.best) || pct>S.best[id]) S.best[id]=pct; save(); }
+
+/* ================= MAP RENDERING ================= */
+const CX=c=>88+c*204, CY=r=>40+r*86, NW=140, NH=38;
+function clip(p,q){const dx=q[0]-p[0], dy=q[1]-p[1]; const t=Math.min(dx?(NW/2)/Math.abs(dx):1e9, dy?(NH/2)/Math.abs(dy):1e9);
+  return [p[0]+dx*t,p[1]+dy*t];}
+function edgeGeom(e){
+  const a=[CX(N[e.from].c),CY(N[e.from].r)], b=[CX(N[e.to].c),CY(N[e.to].r)];
+  if(e.o.via==='backIn'){const x=(CX(0)+CX(1))/2; return {pts:[[a[0]-50,a[1]+NH/2],[x,a[1]+52],[x,b[1]],[b[0]-NW/2,b[1]]],lp:[x+(S.names==='common'?36:0),CY(4.5)]};}
+  if(e.o.via==='aroA'){const y=CY(1.5)-12; return {pts:[[a[0]+40,a[1]-NH/2],[a[0]+40,y],[b[0]-55,y],[b[0]-55,b[1]+NH/2]],lp:[CX(5)+62,y]};}
+  if(e.o.via==='aroT'){const y=CY(1.5)+12; return {pts:[[a[0]+40,a[1]-NH/2],[a[0]+40,y],[b[0]-38,y],[b[0]-38,b[1]-NH/2]],lp:[CX(5)+62,y]};}
+  if(e.o.via==='e1e3'){return {pts:[[a[0]+NW/2,a[1]],[a[0]+NW/2+14,a[1]],[a[0]+NW/2+14,b[1]],[b[0]+NW/2,b[1]]],lp:[0,0]};}
+  if(e.o.via==='backOut'){return {pts:[[a[0]+NW/2,a[1]],[b[0],a[1]],[b[0],b[1]+NH/2]],lp:[b[0],CY(4)]};}
+  const p=clip(a,b), q=clip(b,a); return {pts:[p,q],lp:[(p[0]+q[0])/2,(p[1]+q[1])/2]};
+}
+const RM=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+// Zone bands: [zone, label, col0, row0, col1, row1, tier]
+const BANDS=[['c','COMMON EARLY STEPS',0,0,0,2,'core'],['g','ZONA GLOMERULOSA',0,3,0,6,'core'],['f','ZONA FASCICULATA',1,1,1,4,'core'],
+ ['r','ZONA RETICULARIS + PERIPHERAL ANDROGENS',3,1,5,2,'core'],['f','',2,3,2,4,'adv'],['o','11-OXO ANDROGENS',3,3,4,5,'adv'],['x','BACKDOOR PATHWAY',1,6,4,6,'adv'],['e','ESTROGENS',6,1,6,3,'sex']];
+const RANK={core:0,sex:1,adv:2};
+function ELAB(id){const e=E[id]; return S.names==='common'?(e.o.clabel||COMMON[e.acc[0]]):(e.o.label||ENZ[e.acc[0]][0]);}
+function bandsSVG(tier){return BANDS.filter(b=>RANK[b[6]]<=RANK[tier]).map(b=>{const x=CX(b[2])-NW/2-14,y=CY(b[3])-NH/2-14,w=CX(b[4])-CX(b[2])+NW+28,h=CY(b[5])-CY(b[3])+NH+28;
+  return `<rect class="band" data-z="${b[0]}" x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="var(--z${b[0]})" stroke="var(--z${b[0]})"/>`+(b[1]?`<text class="zlab" x="${x+7}" y="${y+h-4}" style="fill:var(--z${b[0]})">${b[1]}</text>`:'');}).join('');}
+// Flowing substrate along an edge. level 1 = normal flow, 2 = overflow behind a block.
+function fluxSVG(e,level){const g=edgeGeom(e).pts; let len=0; for(let i=1;i<g.length;i++) len+=Math.hypot(g[i][0]-g[i-1][0],g[i][1]-g[i-1][1]);
+  const d='M'+g.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' L'), dur=Math.max(1.1,len/(level===2?95:55)), n=level===2?4:2; let o='';
+  for(let i=0;i<n;i++) o+=`<circle class="flux" data-e="${e.id}" r="${level===2?4:3.1}" fill="currentColor" style="color:var(--k-${klassOf(e.to)})"><animateMotion dur="${dur.toFixed(2)}s" begin="-${(dur*i/n).toFixed(2)}s" repeatCount="indefinite" path="${d}"/></circle>`;
+  return o;}
+function addFlow(st,fn){return {node:st.node,edge:id=>Object.assign(st.edge(id),{flow:fn(id)})};}
+/* st.node(id) -> {text,cls,arrow}; st.edge(id) -> {text,cls,hidden,flow} */
+function mapSVG(tier,st){
+  const show=x=>RANK[x.tier]<=RANK[tier]; const W=(tier==='core'?CX(5)+88:CX(6)+98), H=CY(6)+40; let s='';
+  s+=`<svg viewBox="0 0 ${W} ${H}" id="map" xmlns="http://www.w3.org/2000/svg"><defs>
+   <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--edge)"/></marker>
+   <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--bad)"/></marker></defs>`;
+  s+=bandsSVG(tier);
+  const es=Object.values(E).filter(show);
+  es.forEach(e=>{const g=edgeGeom(e), x=st.edge(e.id);
+    s+=`<polyline class="edge ${x.cls&&x.cls.includes('blocked')?'blocked':''} ${x.flow?'live':''}" points="${g.pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" marker-end="url(#${x.cls&&x.cls.includes('blocked')?'ahb':'ah'})"/>`;});
+  if(!RM) es.forEach(e=>{const x=st.edge(e.id); if(x.flow) s+=fluxSVG(e,x.flow);});
+  es.forEach(e=>{const g=edgeGeom(e), x=st.edge(e.id); if(x.hidden||e.o.deco) return;
+    const w=Math.max(46,x.text.length*6.1+12);
+    if(g.pts.length===2&&Math.abs(g.pts[0][1]-g.pts[1][1])<1&&w>Math.abs(g.pts[0][0]-g.pts[1][0])-2) g.lp=[g.lp[0],g.lp[1]+(e.o.ldown?30:-30)];
+    if(x.text!=='?'&&LOC[e.acc[0]]) x.cls=(x.cls||'')+' '+LOC[e.acc[0]];
+    s+=`<g class="elab ${x.cls||''}" data-e="${e.id}"><rect x="${(g.lp[0]-w/2).toFixed(1)}" y="${(g.lp[1]-9.5).toFixed(1)}" width="${w.toFixed(1)}" height="19" rx="9.5" ry="9.5"/><text x="${g.lp[0].toFixed(1)}" y="${g.lp[1].toFixed(1)}">${esc(x.text)}</text>${x.text!=='?'?`<title>${esc(e.acc.map(k=>FULL[k]).join(' / '))}</title>`:''}</g>`;});
+  Object.values(N).filter(show).forEach(n=>{const x=st.node(n.id), cx=CX(n.c), cy=CY(n.r);
+    s+=`<g class="node k-${klassOf(n.id)} ${x.cls||''}" data-n="${n.id}" style="animation-delay:${(n.c+n.r)*70}ms"><rect x="${cx-NW/2}" y="${cy-NH/2}" width="${NW}" height="${NH}" rx="10" ry="10"/><text x="${x.arrow?cx-9:cx}" y="${cy}"${(x.arrow&&x.text.length>15)?' textLength="106" lengthAdjust="spacingAndGlyphs"':(x.text.length>19?' textLength="128" lengthAdjust="spacingAndGlyphs"':'')}>${esc(x.text)}</text>`
+      +(x.arrow?`<text class="arrow" x="${cx+NW/2-13}" y="${cy}" fill="${x.arrow==='↑'?'var(--good)':'var(--bad)'}">${x.arrow}</text>`:'')+`<title>${esc(n.name)}</title></g>`;});
+  return s+'</svg>';
+}
+const legend=()=>`<div class="legend"><u>Tiles</u>${['prog','mc','gc','and','est'].map(k=>`<span><i style="background:var(--k-${k})"></i>${KLASS[k].replace(/ \(.*/,'')}</span>`).join('')}<span><i style="background:var(--k-ster)"></i>Cholesterol</span><u style="margin-left:8px">Enzymes</u><span><i style="background:var(--mito);border:1px solid var(--line)"></i>Mitochondria</span><span><i style="background:var(--er);border:1px solid var(--line)"></i>Endoplasmic reticulum</span><span>Shaded bands mark cortical zones and pathway groups.</span><button class="ghost" id="btnNames">Enzyme labels: ${S.names==='common'?'enzyme names':'gene symbols'} (switch)</button></div>`;
+
+/* ================= MOLECULE CARDS ================= */
+const FKEYS=['c3','db','c11','c16','c17','oh17','c18','c21'];
+function diffKeys(a,b){return FKEYS.filter(k=>(F[a][k]||'')!==(F[b][k]||''));}
+function molSVG(id,hi){
+  const f=Object.assign({num:id==='chol'},F[id]),L=20,u=17.32,v=10;
+  const C={1:[0,-L],2:[-u,-v],3:[-u,v],4:[0,L],5:[u,v],10:[u,-v],6:[2*u,L],7:[3*u,v],8:[3*u,-v],9:[2*u,-L],11:[2*u,-2*L],12:[3*u,-2.5*L],13:[4*u,-2*L],14:[4*u,-L],15:[4*u+19,-13.8],16:[4*u+30.8,-30],17:[4*u+19,-46.2]};
+  const P18=[4*u,-3*L],P19=[u,-v-L],O3=[-2*u,L],O11=[u,-2.5*L],P20=[C[17][0]+10,C[17][1]-17.3],O20=[P20[0]+L,P20[1]],P21=[P20[0]-10,P20[1]-17.3],OH17=[C[17][0]+18,C[17][1]+7];
+  const ln=(p,q)=>`<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${q[0].toFixed(1)}" y2="${q[1].toFixed(1)}"/>`;
+  const dbl=(p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],n=Math.hypot(dx,dy),ox=-dy/n*3.2,oy=dx/n*3.2; return ln([p[0]+ox+dx*.12,p[1]+oy+dy*.12],[q[0]+ox-dx*.12,q[1]+oy-dy*.12]);};
+  const tx=(p,t,a,dx,dy)=>`<text x="${(p[0]+(dx||0)).toFixed(1)}" y="${(p[1]+(dy||0)).toFixed(1)}" text-anchor="${a}">${t}</text>`;
+  let o='';
+  const OH16=[C[16][0]+19,C[16][1]+4]; const at={c16:C[16],c3:C[3],db:f.db==='aro'?C[10]:f.db==='d5'?[(C[5][0]+C[6][0])/2,(C[5][1]+C[6][1])/2]:C[5],c11:C[11],c17:C[17],oh17:C[17],c18:P18,c21:f.c21?P21:C[17]};
+  [...new Set((hi||[]).map(k=>at[k].join(',')))].forEach(pt=>{const [x,y]=pt.split(',').map(Number); o+=`<circle class="hi" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9"/>`;});
+  [[1,2],[2,3],[3,4],[4,5],[5,10],[10,1],[5,6],[6,7],[7,8],[8,9],[9,10],[9,11],[11,12],[12,13],[13,14],[14,8],[14,15],[15,16],[16,17],[17,13]].forEach(b=>o+=ln(C[b[0]],C[b[1]]));
+  o+=(f.db==='aro'?dbl(C[2],C[1])+dbl(C[4],C[3])+dbl(C[10],C[5]):ln(C[10],P19))+ln(C[13],P18);
+  if(f.c16) o+=ln(C[16],OH16)+tx(OH16,'OH','start',2,3);
+  if(f.num){const ctr={1:[0,0],2:[0,0],3:[0,0],4:[0,0],5:[0,0],10:[0,0],6:[2*u,0],7:[2*u,0],8:[2*u,0],9:[2*u,0],11:[3*u,-1.5*L],12:[3*u,-1.5*L],13:[3*u,-1.5*L],14:[3*u,-1.5*L],15:[4*u+16,-30],16:[4*u+16,-30],17:[4*u+16,-30]};
+    const cn=(x,y,t)=>`<text class="cnum" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle">${t}</text>`;
+    Object.keys(C).forEach(n=>{const c=ctr[n]; o+=cn(c[0]+(C[n][0]-c[0])*.62,c[1]+(C[n][1]-c[1])*.62+2.5,n);});
+    o+=cn(P18[0]+7,P18[1]+5,18)+cn(P19[0]+7,P19[1]+5,19)+cn(P20[0]-7,P20[1]+1,20)+cn(P21[0]+12,P21[1]-4,21);}
+  if(f.db==='d5') o+=dbl(C[6],C[5]); if(f.db==='d4') o+=dbl(C[5],C[4]);
+  o+=ln(C[3],O3); if(f.c3==='keto') o+=dbl(C[3],O3);
+  o+=tx(O3,f.c3==='keto'?'O':f.c3==='SO4'?'⁻O₃SO':'HO','end',-2,6);
+  if(f.c11){o+=ln(C[11],O11); if(f.c11==='keto') o+=dbl(C[11],O11); o+=tx(O11,f.c11==='keto'?'O':'HO','end',-2,1);}
+  if(f.c18) o+=tx(P18,f.c18==='CHO'?'CHO':'CH₂OH','end',-11,2);
+  if(f.c17==='keto'||f.c17==='OH'){o+=ln(C[17],P20); if(f.c17==='keto') o+=dbl(C[17],P20); o+=tx(P20,f.c17==='keto'?'O':'OH','start',1,-2);}
+  else {o+=ln(C[17],P20)+ln(P20,P21)+ln(P20,O20);
+    if(f.c17==='acetyl'){o+=dbl(P20,O20)+tx(O20,'O','start',2,3);} else o+=tx(O20,'C22–C27','start',2,3);
+    o+=tx(P21,f.c21==='OH'?'CH₂OH':'CH₃','middle',0,-3);}
+  if(f.oh17){o+=ln(C[17],OH17)+tx(OH17,'OH','start',2,4);}
+  return `<svg class="molsvg" data-mol="${id}" viewBox="-70 -98 236 132" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
+}
+function molTags(id){const f=F[id],t=[f.db==='aro'?'C18':f.c17==='chain'?'C27':f.c17==='acetyl'?'C21':'C19'];
+  t.push({d5:'Δ5',d4:'Δ4',none:'5α-reduced',aro:'aromatic A ring'}[f.db]); t.push({bOH:'3β-OH',aOH:'3α-OH',keto:'3-ketone',SO4:'3β-sulfate',phOH:'3-OH (phenol)'}[f.c3]);
+  if(f.c16) t.push('16α-OH');
+  if(f.c11) t.push(f.c11==='OH'?'11β-OH':'11-ketone'); if(f.oh17) t.push('17α-OH');
+  t.push({chain:'full cholesterol side chain',acetyl:'C20 ketone',keto:'17-ketone',OH:'17β-OH'}[f.c17]);
+  if(f.c18) t.push(f.c18==='CHO'?'18-aldehyde':'18-OH'); if(f.c21==='OH') t.push('21-OH'); return t.join(' · ');}
+function cardHTML(k){ if(!k) return ''; let [t,id]=k.split(':');
+  if(t==='x'){ // enzyme clicked during a Build level: hide substrate and product until both are placed
+    const e=E[id], known=x=>!G||G.mode!=='build'||!G.slots.includes(x)||!!G.done[x];
+    if(known('n:'+e.from)&&known('n:'+e.to)) t='e';
+    else return `<div class="mol" id="card"><div class="txt"><b>${esc(e.acc.map(x=>ENZ[x][1]).join('  or  '))}</b><div id="fullname">${e.acc.map(x=>esc(FULL[x])).join('<br>')}</div>${LOC[e.acc[0]]?`<div class="sub">Location in the cell: ${LOCNAME[LOC[e.acc[0]]]}</div>`:''}<div style="margin-top:4px">${ACT[id]||ACT[e.acc[0]]}</div><div class="sub">Substrate and product stay hidden until you have placed both steroids.</div></div></div>`; }
+  if(t==='n') return `<div class="mol" id="card">${molSVG(id,[])}<div class="txt"><b>${esc(N[id].name)}</b><div>${klassText(id)}</div><div class="sub">${molTags(id)}${id==='chol'?'. Carbons are numbered on this card; every steroid on the map keeps this numbering.':''}</div></div></div>`;
+  const e=E[id], keys=diffKeys(e.from,e.to);
+  return `<div class="mol" id="card">${molSVG(e.from,keys)}<div class="arr">→</div>${molSVG(e.to,keys)}<div class="txt"><b>${esc(e.acc.map(x=>ENZ[x][1]).join('  or  '))}</b><div id="fullname">${e.acc.map(x=>esc(FULL[x])).join('<br>')}</div>${LOC[e.acc[0]]?`<div class="sub">Location in the cell: ${LOCNAME[LOC[e.acc[0]]]}</div>`:''}<div style="margin-top:4px">${ACT[id]||ACT[e.acc[0]]}</div><div class="sub">${esc(N[e.from].label)} → ${esc(N[e.to].label)}. Circles mark where the molecule changes. Schematic: stereochemistry is in the text, not the drawing.</div></div></div>`;}
+function startStudy(){G={mode:'study',card:null}; renderStudy();}
+function renderStudy(){const st={node:id=>({text:N[id].label,cls:'clicky'+(G.card==='n:'+id?' active':'')}),edge:id=>({text:ELAB(id),cls:'clicky'+(G.card==='e:'+id?' active':'')})};
+  $('view').innerHTML=`<div class="panel"><div class="prompt" id="prompt">Explore the map</div><div class="sub">Click any steroid to see its structure, or any enzyme to see exactly what it changes.</div>${cardHTML(G.card)}</div><div class="mapbox">${mapSVG('adv',addFlow(st,()=>1))}</div>${legend()}`;}
+
+/* ================= HOME ================= */
+let G=null; // current game
+function ring(pct){const c=2*Math.PI*18, v=pct==null?0:pct; return `<svg class="ring" viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="18"/>${v>0?`<circle class="fg" cx="23" cy="23" r="18" stroke-dasharray="${(c*v/100).toFixed(1)} ${c.toFixed(1)}"/>`:''}<text x="23" y="23">${pct==null?'–':pct}</text></svg>`;}
+function mini(lv){const inLv=x=>lv.span?RANK[x.tier]<=RANK[lv.tier]:x.tier===lv.tier;
+  return `<svg class="mini" viewBox="0 0 104 70">${Object.values(N).map(n=>`<circle cx="${8+n.c*14.6}" cy="${7+n.r*9.3}" r="3.4" fill="${inLv(n)?`var(--k-${klassOf(n.id)})`:'var(--line)'}"/>`).join('')}</svg>`;}
+function todayKey(d){d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function streakDays(){const days=S.days||{}; let n=0; const d=new Date(); if(!days[todayKey(d)]) d.setDate(d.getDate()-1);
+  while(days[todayKey(d)]){n++; d.setDate(d.getDate()-1);} return n;}
+function mastery(){const keys=Object.values(N).map(n=>'n:'+n.id).concat(Object.values(E).filter(e=>!e.o.deco).map(e=>'e:'+e.id));
+  const ok=keys.filter(k=>{const it=S.items[k]; return it&&it.streak>=1&&!isWeak(k);}).length; return Math.round(100*ok/keys.length);}
+function renderHeader(){const el=$('stats'); if(!el) return; const weak=Object.keys(S.items).filter(isWeak).length;
+  el.innerHTML=`<span class="stat"><b id="stStreak">${streakDays()}</b>day streak</span><span class="stat"><b id="stWeak">${weak}</b>weak spots</span><span class="stat"><b id="stMastery">${mastery()}%</b>map mastery</span>`;
+  document.documentElement.dataset.theme=S.theme==='light'?'light':'dark'; const b=$('btnTheme'); if(b) b.textContent=S.theme==='light'?'Dark theme':'Light theme'; renderAcct();}
+function home(){
+  G=null; renderHeader();
+  const weak=Object.keys(S.items).filter(isWeak);
+  const best=id=>id in S.best?`<i>Best ${S.best[id]}%</i>`:'<i>Not played</i>';
+  const pct=id=>id in S.best?S.best[id]:null;
+  const modeCard=(m,t,d)=>`<button class="lvl" data-mode="${m}"><div class="top">${ring(pct(m))}</div><b>${t}</b><span>${d}</span>${best(m)}</button>`;
+  $('view').innerHTML=`
+   <h2>Build the map</h2>
+   <div class="sub">Levels remove scaffolding in order. Word bank is recognition; typed is recall, which is the goal. Levels 1 to 5 cover the full classic map, including androstenediol and the estrogens. Click any enzyme label that is showing to see its full name.</div>
+   <div class="grid" style="margin-top:10px">${LEVELS.map(l=>`<button class="lvl" data-lvl="${l.id}"><div class="top">${ring(pct(l.id))}${mini(l)}</div><b>${l.t}</b><span>${l.s}</span>${best(l.id)}</button>`).join('')}</div>
+   <h2>CAH: break the pathway</h2>
+   <div class="grid">${modeCard('block','Block the enzyme','Given a deficiency, mark what rises and falls, then call the phenotype.')}${modeCard('name','Name the defect','Given the lab and clinical pattern, type the enzyme or gene.')}${modeCard('sort','Sort it','Quick-fire: steroid class with carbon count, and whether an enzyme sits in mitochondria or the endoplasmic reticulum.')}</div>
+   <h2>Reference and review</h2>
+   <div class="grid">
+    <button class="lvl" data-mode="study"><div class="top"><span style="font-size:30px;margin:0">🧭</span></div><b>Explore the map</b><span>The full map with every label. Click a steroid for its structure, or an enzyme for the carbon it modifies.</span><i>Open book</i></button>
+    <button class="lvl" data-mode="weak"><div class="top"><span style="font-size:30px;margin:0">🎯</span></div><b>Drill weak spots</b><span>Typed recall of only the map items you have missed.</span><i>${weak.filter(k=>/^[ne]:/.test(k)).length} map items due</i></button>
+   </div>
+   <div class="weak" style="margin-top:10px">${weak.length?'Currently weak: '+weak.map(labelOf).join(', '):'No misses recorded yet.'}
+   &nbsp;<button class="ghost" id="btnReset">Reset progress</button></div>`;
+  if(Cloud&&Cloud.offer) $('view').insertAdjacentHTML('afterbegin','<div class="note" id="guestOffer">This browser has guest progress that is not in your account. <button id="btnGuestYes">Add it to my account</button> <button class="ghost" id="btnGuestNo">No thanks</button></div>');
+}
+function labelOf(k){const [t,id]=k.split(':');
+  if(t==='l') return COMMON[id]+' location'; if(t==='k') return N[id]?N[id].label+' class':id;
+  if(t==='n') return N[id]?N[id].label:id;
+  if(t==='e') return E[id]?`${N[E[id].from].label} → ${N[E[id].to].label}`:id;
+  if(t==='d'){const d=DIS.find(x=>x.id===id); return d?d.name:id;}
+  const c=CARDS.find(x=>x.id===id); return c?c.name:id;}
+
+/* ================= BUILD GAME ================= */
+const NODE_ORDER=['chol','preg','p17','dhea','prog','ohp','a4','t','dht','doc','s','b','f','b18','aldo'];
+function startBuild(lv,onlyKeys){
+  const inLv=x=>lv.span?RANK[x.tier]<=RANK[lv.tier]:x.tier===lv.tier;
+  let ns=NODE_ORDER.filter(i=>inLv(N[i])).concat(Object.values(N).filter(n=>inLv(n)&&!NODE_ORDER.includes(n.id)).map(n=>n.id));
+  let es=Object.values(E).filter(e=>inLv(e)&&!e.o.deco).map(e=>e.id);
+  let slots=[]; if(lv.targets.includes('n')) slots=slots.concat(ns.map(i=>'n:'+i)); if(lv.targets.includes('e')) slots=slots.concat(es.map(i=>'e:'+i));
+  if(onlyKeys) slots=onlyKeys;
+  G={mode:'build',lv,slots,done:{},tries:{},firstOK:0,active:slots[0],t0:Date.now(),
+     tier:(onlyKeys?onlyKeys.map(k=>{const [t,i]=k.split(':');return (t==='n'?N[i]:E[i]).tier;}).sort((a,b)=>RANK[b]-RANK[a])[0]:lv.tier),
+     bankN:shuffle(slots.filter(k=>k[0]==='n').map(k=>k.slice(2))),
+     bankE:shuffle([...new Set(Object.values(E).filter(e=>RANK[e.tier]<=RANK[lv.tier]).map(e=>e.acc[0]))]), fb:['','']};
+  renderBuild();
+}
+function buildState(){
+  const isSlot=k=>G.slots.includes(k);
+  return {
+   node(id){const k='n:'+id; if(!isSlot(k)) return {text:N[id].label,cls:''};
+     if(G.done[k]) return {text:N[id].label,cls:(G.done[k]==='rev'?'revealed':'')+(G.card===k?' pop':'')};
+     return {text:'?',cls:'blank clicky'+(G.active===k?' active':'')+(G.active===k&&G.fb[0]==='bad'?' miss':'')};},
+   edge(id){const k='e:'+id, e=E[id], lab=ELAB(id);
+     if(!isSlot(k)) return (G.lv.hideOther)?{text:'',hidden:true}:{text:lab,cls:'clicky'+(G.card==='x:'+id?' active':'')};
+     if(G.done[k]) return {text:lab,cls:'clicky'+(G.done[k]==='rev'?' revealed':'')+(G.card==='x:'+id?' active':'')};
+     return {text:'?',cls:'blank clicky'+(G.active===k?' active':'')+(G.active===k&&G.fb[0]==='bad'?' miss':'')};}
+  };
+}
+function buildFlow(id){const e=E[id], kn=k=>!G.slots.includes(k)||!!G.done[k]; return kn('n:'+e.from)&&kn('n:'+e.to)&&kn('e:'+id)?1:0;}
+function promptFor(k){const [t,id]=k.split(':');
+  if(t==='n') return 'Which steroid belongs in the highlighted box?';
+  const e=E[id], vis=x=>(G.slots.includes('n:'+x)&&!G.done['n:'+x])?'the blank box':N[x].label;
+  return `Which enzyme converts ${vis(e.from)} to ${vis(e.to)}? (highlighted arrow)`;}
+function renderBuild(keep){
+  const typed=keep&&$('ans')?$('ans').value:'';
+  const left=G.slots.filter(k=>!G.done[k]).length, total=G.slots.length;
+  if(!left) return finishBuild();
+  const k=G.active, isN=k[0]==='n';
+  let input;
+  if(G.lv.input==='bank'){
+    const chips=isN?G.bankN.filter(id=>!G.done['n:'+id]).map(id=>`<button class="chip" data-chip="${id}">${esc(N[id].label)}</button>`)
+                   :G.bankE.map(id=>`<button class="chip" data-chip="${id}">${esc(ENZ[id][1])}</button>`);
+    input=`<div class="chips">${chips.join('')}</div>`;
+  } else input=`<div class="bar" style="margin-top:10px"><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${isN?'steroid name or abbreviation':'enzyme or gene name'}"><button class="primary" id="btnSubmit">Check</button><button class="ghost" id="btnReveal">Reveal (counts as a miss)</button></div>`;
+  $('view').innerHTML=`<div class="panel"><div class="bar"><div class="prompt" id="prompt">${promptFor(k)}</div><span class="sp"></span><span class="sub" id="prog">${total-left} / ${total}</span></div>
+    ${input}<div class="fb ${G.fb[0]}" id="fb">${G.fb[1]}</div>${cardHTML(G.card)}</div>
+    <div class="mapbox">${mapSVG(G.tier,addFlow(buildState(),buildFlow))}</div>${legend()}`;
+  const a=$('ans'); if(a) a.focus(); if(a&&typed) a.value=typed;
+}
+function nextActive(){const i=G.slots.indexOf(G.active);
+  for(let j=1;j<=G.slots.length;j++){const k=G.slots[(i+j)%G.slots.length]; if(!G.done[k]){G.active=k;return;}}}
+function answerBuild(val,isChip){
+  const k=G.active,[t,id]=k.split(':'); let ok;
+  if(isChip) ok = t==='n' ? val===id : E[id].acc.includes(val);
+  else { if(!String(val).trim()) return; ok = t==='n' ? matchNode(id,val) : matchEdge(id,val); }
+  const truth = t==='n' ? N[id].name : (E[id].acc.map(x=>ENZ[x][1]).join('  or  '));
+  if(ok){ if(!G.tries[k]){G.firstOK++; rec(k,true);} G.done[k]='ok'; G.card=k; G.fb=['good','Correct: '+esc(truth)]; nextActive(); }
+  else {
+    if(!G.tries[k]) rec(k,false);
+    G.tries[k]=(G.tries[k]||0)+1;
+    let hint='Not that one.';
+    if(!isChip){const nk=NODE_KEYS[norm(val)], ek=ENZ_KEYS[norm(val)];
+      if(t==='n'&&nk) hint=`${esc(N[nk].name)} is a real steroid, but it sits elsewhere on the map.`;
+      else if(t==='e'&&ek) hint=`${esc(ENZ[[...ek][0]][1])} is a real enzyme, but not for this step.`;
+      else hint='Not recognized. Check spelling, or use an abbreviation such as 17-OHP or CYP21A2.';}
+    if(G.tries[k]>=3){G.done[k]='rev'; G.card=k; G.fb=['warn','Third miss. Answer: '+esc(truth)]; nextActive();}
+    else G.fb=['bad',hint+` (${3-G.tries[k]} ${3-G.tries[k]===1?'try':'tries'} left)`];
+  }
+  renderBuild();
+}
+function revealBuild(){const k=G.active,[t,id]=k.split(':'); if(!G.tries[k]) rec(k,false); G.tries[k]=3; G.done[k]='rev'; G.card=k;
+  G.fb=['warn','Answer: '+esc(t==='n'?N[id].name:E[id].acc.map(x=>ENZ[x][1]).join('  or  '))]; nextActive(); renderBuild();}
+function finishBuild(){
+  const total=G.slots.length, pct=Math.round(100*G.firstOK/total), secs=Math.round((Date.now()-G.t0)/1000);
+  if(G.lv.id!=='weak') setBest(G.lv.id,pct);
+  const missed=G.slots.filter(k=>G.tries[k]);
+  const st={node:id=>({text:N[id].label,cls:(G.tries['n:'+id]?'revealed':'')+' lit'}),edge:id=>({text:ELAB(id),cls:G.tries['e:'+id]?'revealed':''})};
+  $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${pct}% first-try (${G.firstOK} of ${total}) in ${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</div>
+   <div class="explain">${missed.length?'Missed, outlined in amber below: '+missed.map(labelOf).map(esc).join(', ')+'. They are queued in Drill weak spots.':'Clean run. Move up a level, or come back tomorrow and do it again: spacing is what makes it stick.'}</div>
+   <div class="bar" style="margin-top:10px"><button class="primary" id="btnAgain">Again</button><button id="btnHome2">Home</button></div></div>
+   <div class="mapbox">${mapSVG(G.tier,addFlow(st,()=>1))}</div>${legend()}`;
+}
+
+/* ================= BLOCK THE ENZYME ================= */
+const CORE_IDS=NODE_ORDER.concat(['adiol5','e1','e2','e3']);
+function startBlock(){
+  const order=shuffle(DIS).sort((a,b)=>(isWeak('d:'+b.id)?1:0)-(isWeak('d:'+a.id)?1:0));
+  G={mode:'block',order,i:0,clean:0,marks:{},checked:null}; renderBlock();
+}
+function blockFlow(d,ck){ if(!ck) return id=>d.block.includes(id)?0:1;
+  const reach=new Set(['chol']); let grow=true;
+  while(grow){grow=false; Object.values(E).forEach(e=>{if(RANK[e.tier]<=1&&!d.block.includes(e.id)&&reach.has(e.from)&&!reach.has(e.to)){reach.add(e.to);grow=true;}});}
+  return id=>{const e=E[id]; if(d.block.includes(id)||!reach.has(e.from)) return 0; return d.up.includes(e.from)?2:1;};}
+function expected(d,id){return d.up.includes(id)?'up':d.down.includes(id)?'down':d.opt.includes(id)?'opt':(d.upok||[]).includes(id)?'upok':(d.dnok||[]).includes(id)?'dnok':'none';}
+// Is mark m ('up' | 'down' | undefined) acceptable for expectation ex? upok = up or unmarked; dnok = down or unmarked.
+function markOK(ex,m){return ex==='opt'||(ex==='none'?!m:ex==='upok'?m!=='down':ex==='dnok'?m!=='up':m===ex);}
+function renderBlock(){
+  const d=G.order[G.i], ck=G.checked;
+  const st={
+   node(id){const m=G.marks[id], ex=expected(d,id); if(ex==='opt') return {text:N[id].label,cls:'locked'};
+     let cls='clicky', arrow=m==='up'?'↑':m==='down'?'↓':'';
+     if(ck){cls=''; const ok=markOK(ex,m); if(ex==='up'||ex==='down'||m){cls=ok?'right':'wrong';}
+       if(!ok) arrow=(ex==='up'||ex==='upok')?'↑':(ex==='down'||ex==='dnok')?'↓':'';
+       if(ok&&ex==='opt') cls='';}
+     if(ck){ if(ex==='up') cls+=' swell'; if(ex==='down'&&markOK(ex,m)) cls+=' dim'; }
+     return {text:N[id].label,cls,arrow};},
+   edge(id){const e=E[id]; return {text:(d.blockLabel&&d.blockLabel[id])||((d.block.includes(id)?'✕ ':'')+ELAB(id)),cls:d.block.includes(id)?'blocked':''};}
+  };
+  const sel=(id,opts)=>`<select id="${id}" ${ck?'disabled':''} class="${ck?(ck[id]?'ok':'no'):''}"><option value="">choose…</option>${opts.map(o=>`<option ${G.ph&&G.ph[id]===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  $('view').innerHTML=`<div class="panel"><div class="bar"><div class="prompt" id="prompt">${esc(d.name)} <span class="sub">(${esc(d.gene)})</span></div><span class="sp"></span><span class="sub">${G.i+1} / ${G.order.length}</span></div>
+   <div class="sub">Click a steroid to cycle ↑ accumulates, ↓ deficient, or unmarked for unchanged. Red dashed arrows are blocked. Greyed boxes are not tested for this deficiency, because the level varies or no source states it. After you check, the map shows a schematic of the flow: precursors swell behind the block and overflow into whatever path is still open. Mark the serum pattern you would expect in the untreated patient.</div>
+   <div class="pheno"><label>Mineralocorticoid effect ${sel('mc',MC_OPTS)}</label><label>46,XX external genitalia ${sel('xx',XX_OPTS)}</label><label>46,XY external genitalia ${sel('xy',XY_OPTS)}</label></div>
+   <div class="bar" style="margin-top:10px">${ck?`<button class="primary" id="btnNextD">${G.i+1<G.order.length?'Next deficiency':'Finish'}</button>`:'<button class="primary" id="btnCheckD">Check</button>'}</div>
+   ${ck?`<div class="fb ${ck.wrong?'bad':'good'}" id="fb">${ck.wrong?ck.wrong+' wrong: '+ck.nw+' on the map'+(ck.nw?' (red boxes, each showing the correct arrow)':'')+' and '+ck.pw+' in the phenotype menus'+(ck.pw?' (outlined in red above)':'')+'.':'All correct.'}</div><div class="explain" id="why">${d.why}<br><span class="sub">Correct phenotype: ${d.mc}; 46,XX ${d.xx.toLowerCase()}; 46,XY ${[].concat(d.xy).join(' or ').toLowerCase()}. Greyed boxes were not tested. Unshaded boxes were correctly left unmarked.</span></div>`:''}
+   </div><div class="mapbox">${mapSVG('sex',addFlow(st,blockFlow(d,ck)))}</div>${legend()}`;
+}
+function checkBlock(){
+  const d=G.order[G.i]; G.ph={mc:$('mc').value,xx:$('xx').value,xy:$('xy').value};
+  let wrong=0; CORE_IDS.forEach(id=>{const ex=expected(d,id), m=G.marks[id]; if(!markOK(ex,m)) wrong++;}); const nw=wrong;
+  const ck={mc:G.ph.mc===d.mc,xx:G.ph.xx===d.xx,xy:[].concat(d.xy).includes(G.ph.xy)}; ['mc','xx','xy'].forEach(k=>{if(!ck[k]) wrong++;});
+  ck.wrong=wrong; ck.nw=nw; ck.pw=wrong-nw; G.checked=ck; if(!wrong) G.clean++; rec('d:'+d.id,!wrong); renderBlock();
+}
+function nextBlock(){G.i++; G.marks={}; G.ph=null; G.checked=null;
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('block',pct);
+    $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} deficiencies fully correct (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="block">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
+  renderBlock();}
+
+/* ================= NAME THE DEFECT ================= */
+function startName(){G={mode:'name',order:shuffle(CARDS).sort((a,b)=>(isWeak('q:'+b.id)?1:0)-(isWeak('q:'+a.id)?1:0)),i:0,clean:0,tries:0,shown:null}; renderName();}
+function renderName(){
+  const c=G.order[G.i];
+  $('view').innerHTML=`<div class="panel"><div class="bar"><div class="sub">Which enzyme or gene is deficient?</div><span class="sp"></span><span class="sub">${G.i+1} / ${G.order.length}</span></div>
+   <div class="prompt" id="prompt" style="margin-top:6px;font-weight:500;font-size:16.5px">${esc(c.clue)}</div>
+   ${G.shown?`<div class="fb ${G.shown[0]}" id="fb">${G.shown[1]}</div><div class="bar" style="margin-top:8px"><button class="primary" id="btnNextQ">${G.i+1<G.order.length?'Next':'Finish'}</button></div>`
+   :`<div class="bar" style="margin-top:10px"><input id="ans" autocomplete="off" spellcheck="false" placeholder="enzyme or gene"><button class="primary" id="btnSubmit">Check</button><button class="ghost" id="btnReveal">Reveal</button></div><div class="fb ${G.fb?G.fb[0]:''}" id="fb">${G.fb?G.fb[1]:''}</div>`}</div>`;
+  const a=$('ans'); if(a) a.focus();
+}
+function answerName(val,reveal){
+  const c=G.order[G.i];
+  if(!reveal && !String(val).trim()) return;
+  if(!reveal && matchCard(c,val)){ if(!G.tries){G.clean++; rec('q:'+c.id,true);} G.shown=['good','Correct: '+esc(c.name)]; }
+  else { if(!G.tries) rec('q:'+c.id,false); G.tries++;
+    if(reveal||G.tries>=2) G.shown=['warn','Answer: '+esc(c.name)];
+    else G.fb=['bad','No. One more try.']; }
+  renderName();
+}
+function nextName(){G.i++; G.tries=0; G.shown=null; G.fb=null;
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('name',pct);
+    $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} first-try (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="name">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
+  renderName();}
+
+/* ================= SORT IT ================= */
+function startSort(){
+  const enz=['scc','hsd3b2','oh17','cyp21','b1','b2','aro'].map(id=>({key:'l:'+id,q:`Where in the cell is ${COMMON[id]} (${ENZ[id][0]})?`,opts:Object.values(LOCNAME),ans:[LOCNAME[LOC[id]]]}));
+  const ster=Object.values(N).filter(n=>n.tier!=='adv'&&n.id!=='chol').map(n=>({key:'k:'+n.id,q:`Which class is ${n.label}?`,opts:['prog','mc','gc','and','est'].map(k=>KLASS[k]),ans:klassAns(n.id)}));
+  const order=shuffle(enz.concat(ster)).sort((a,b)=>(isWeak(b.key)?1:0)-(isWeak(a.key)?1:0)).slice(0,15);
+  G={mode:'sort',order,i:0,clean:0,picked:null}; renderSort();}
+function renderSort(){const c=G.order[G.i];
+  $('view').innerHTML=`<div class="panel"><div class="bar"><div class="prompt" id="prompt">${esc(c.q)}</div><span class="sp"></span><span class="sub">${G.i+1} / ${G.order.length}</span></div>
+   <div class="chips">${c.opts.map(o=>`<button class="chip" data-opt="${esc(o)}" ${G.picked?'disabled':''} style="${G.picked&&c.ans.includes(o)?'border-color:var(--good);font-weight:700':G.picked===o?'border-color:var(--bad)':''}">${esc(o)}</button>`).join('')}</div>
+   ${G.picked?`<div class="fb ${c.ans.includes(G.picked)?'good':'bad'}" id="fb">${c.ans.includes(G.picked)?'Correct.'+(c.ans.length>1?' Either '+esc(c.ans.join(' or '))+' is accepted.':''):'Answer: '+esc(c.ans.join(' or '))}</div><div class="bar" style="margin-top:8px"><button class="primary" id="btnNextS">${G.i+1<G.order.length?'Next':'Finish'}</button></div>`:''}</div>`;}
+function answerSort(o){const c=G.order[G.i]; G.picked=o; const ok=c.ans.includes(o); if(ok) G.clean++; rec(c.key,ok); renderSort();}
+function nextSort(){G.i++; G.picked=null;
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('sort',pct);
+    $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} correct (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="sort">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
+  renderSort();}
+function rerender(){ if(!G) return; if(G.mode==='build') renderBuild(true); else if(G.mode==='study') renderStudy();
+  else if(G.mode==='block'&&G.i<G.order.length){ if(!G.checked&&$('mc')) G.ph={mc:$('mc').value,xx:$('xx').value,xy:$('xy').value}; renderBlock(); } }
+
+/* ================= ACCOUNTS AND CLOUD SAVE ================= */
+// Optional. Guest play needs none of this and works offline from a file. Accounts are offered only when the page is served over https.
+const SUPA_URL='https://zbvubrdyxozvbdmdbezx.supabase.co', SUPA_KEY='sb_publishable_prIg7nKQCiH-DhzAwUHVWA_WkA0Leal',   // this site's own Supabase project; the publishable key is meant to be public, row-level security does the protecting
+      SUPA_LIB='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.0', TABLE='steroid_progress';
+Cloud={client:null,uid:null,email:'',status:'',offer:false,timer:null,recovery:false,
+  eligible(){return !!window.__steroidClient||(!!SUPA_URL&&!!SUPA_KEY&&(location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname)));},
+  init(){ if(!this.eligible()||!canPersist) return Promise.resolve();
+    if(window.__steroidClient) return this.attach(window.__steroidClient);
+    return new Promise(res=>{const sc=document.createElement('script'); sc.src=SUPA_LIB;
+      sc.onload=()=>{try{this.attach(window.supabase.createClient(SUPA_URL,SUPA_KEY)).then(res,res);}catch(e){res();}}; sc.onerror=()=>res(); document.head.appendChild(sc);}); },
+  async attach(c){this.client=c;
+    c.auth.onAuthStateChange((evt,session)=>{ if(evt==='PASSWORD_RECOVERY'){this.recovery=true; openAuth();} this.apply(session); });
+    try{const r=await c.auth.getSession(); await this.apply(r&&r.data?r.data.session:null);}catch(e){} renderAcct();},
+  async apply(session){const u=session&&session.user?session.user:null, uid=u&&/^[A-Za-z0-9-]{8,64}$/.test(String(u.id))?String(u.id):null; if(uid===this.uid) return;
+    this.uid=uid; this.email=u&&uid?String(u.email||''):''; this.offer=false; clearTimeout(this.timer); const prefs=prefsOf(S);
+    if(!uid){KEYA=KEY; S=Object.assign(loadState(KEY),prefs); this.status=''; closeAuth(); home(); return;}
+    KEYA=KEY+'.u.'+uid; S=Object.assign(loadState(KEYA),prefs); closeAuth(); home();   // this account's own local copy, never the guest's or another account's
+    const server=await this.pull(); if(this.uid!==uid) return;
+    if(server){ S=Object.assign(mergeState(S,server),prefs);
+      const guest=loadState(KEY); let seen=null; try{seen=localStorage.getItem(KEYA+'.guest');}catch(e){}
+      if(hasProgress(guest)&&!seen){ if(!hasProgress(S)) this.importGuest(true); else this.offer=true; } }
+    saveLocal(); if(!G) home(); else renderHeader(); if(server) this.sync(); },
+  // Guest progress is copied into an account only when that account is empty, or when the player says yes.
+  importGuest(quiet){const g=loadState(KEY), prefs=prefsOf(S); S=Object.assign(mergeState(S,Object.assign({},g,{resetAt:S.resetAt||0})),prefs);
+    try{localStorage.setItem(KEYA+'.guest','1');}catch(e){} this.offer=false; saveLocal(); if(!quiet) this.sync();},
+  declineGuest(){try{localStorage.setItem(KEYA+'.guest','1');}catch(e){} this.offer=false;},
+  async pull(){try{const r=await this.client.from(TABLE).select('data').eq('user_id',this.uid).maybeSingle(); if(r.error){this.status='offline'; return null;} return cleanState(r.data?r.data.data:null);}catch(e){this.status='offline'; return null;}},
+  async sync(){ if(!this.uid||!this.client) return; const uid=this.uid; this.status='saving'; renderAcct();
+    try{const server=await this.pull(); if(this.uid!==uid) return; if(!server) throw new Error('offline');
+      S=Object.assign(mergeState(S,server),prefsOf(S)); saveLocal();
+      const r=await this.client.from(TABLE).upsert({user_id:uid,data:cleanState(S),updated_at:new Date().toISOString()},{onConflict:'user_id'}); if(r.error) throw r.error;
+      if(this.uid===uid) this.status='saved';}catch(e){ if(this.uid===uid) this.status='offline'; }
+    renderHeader(); },
+  schedule(){ if(!this.uid) return; clearTimeout(this.timer); this.timer=setTimeout(()=>this.sync(),1500); },
+  flush(){ clearTimeout(this.timer); return this.uid?this.sync():Promise.resolve(); }
+};
+function renderAcct(){const el=$('acct'); if(!el) return; if(!Cloud||!Cloud.client){el.innerHTML=''; return;}
+  const st={saving:'saving…',saved:'saved to account',offline:'offline, saved on this device'}[Cloud.status]||'';
+  el.innerHTML=Cloud.uid?`<span class="sub" id="acctWho">${esc(Cloud.email)}${st?' · '+st:''}</span><button class="ghost" id="btnSignOut">Sign out</button>`:`<button class="primary" id="btnAcct">Sign in to save progress</button>`;}
+function openAuth(){const el=$('authbox'); if(!el||!Cloud.client) return; const rec=Cloud.recovery;
+  el.innerHTML=`<div class="panel" id="authpanel"><div class="bar"><div class="prompt">${rec?'Choose a new password':'Sign in to save your progress'}</div><span class="sp"></span><button class="ghost" id="btnAuthClose">${rec?'Cancel':'Play as guest'}</button></div>
+   <div class="sub">An account keeps your scores, streak and weak spots on every device. Only your email address and your game progress are stored. No patient data is ever involved.</div>
+   <div class="bar" style="margin-top:10px">${rec?'':'<input id="auEmail" type="email" autocomplete="email" placeholder="email address">'}<input id="auPass" type="password" autocomplete="${rec?'new-password':'current-password'}" placeholder="${rec?'new password':'password'}">
+   ${rec?'<button class="primary" data-au="newpw">Save new password</button>':'<button class="primary" data-au="in">Sign in</button><button data-au="up">Create account</button><button data-au="google">Continue with Google</button><button class="ghost" data-au="reset">Forgot password</button>'}</div>
+   <div class="fb" id="auMsg"></div></div>`; const f=$(rec?'auPass':'auEmail'); if(f) f.focus();}
+function closeAuth(){const el=$('authbox'); if(el) el.innerHTML='';}
+async function authDo(kind){const c=Cloud.client, email=(($('auEmail')||{}).value||'').trim(), pw=($('auPass')||{}).value||'', back=location.href.split('#')[0];
+  const msg=(t,cls)=>{const m=$('auMsg'); if(m){m.className='fb '+(cls||''); m.textContent=t;}};
+  try{ let r;
+    if(kind==='in'){ if(!email||!pw) return msg('Enter your email and password.','bad'); r=await c.auth.signInWithPassword({email,password:pw}); if(r.error) return msg(r.error.message,'bad'); }
+    else if(kind==='up'){ if(!email||pw.length<8) return msg('Enter your email and a password of at least 8 characters.','bad'); r=await c.auth.signUp({email,password:pw,options:{emailRedirectTo:back}}); if(r.error) return msg(r.error.message,'bad'); if(!(r.data&&r.data.session)) msg('Check your email for a confirmation link, then sign in.','good'); }
+    else if(kind==='google'){ r=await c.auth.signInWithOAuth({provider:'google',options:{redirectTo:back}}); if(r.error) msg(r.error.message,'bad'); }
+    else if(kind==='reset'){ if(!email) return msg('Enter your email address first.','bad'); r=await c.auth.resetPasswordForEmail(email,{redirectTo:back}); msg(r.error?r.error.message:'If that address has an account, a reset link is on its way.',r.error?'bad':'good'); }
+    else if(kind==='newpw'){ if(pw.length<8) return msg('Use at least 8 characters.','bad'); r=await c.auth.updateUser({password:pw}); if(r.error) return msg(r.error.message,'bad'); Cloud.recovery=false; closeAuth(); }
+  }catch(e){msg('Could not reach the sign-in service. You can keep playing as a guest.','bad');}}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'&&Cloud.uid) Cloud.flush(); });
+document.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&(ev.target.id==='auEmail'||ev.target.id==='auPass')){ev.preventDefault(); authDo(Cloud.recovery?'newpw':'in');} });
+
+/* ================= EVENTS ================= */
+function startWeak(){const keys=Object.keys(S.items).filter(k=>/^[ne]:/.test(k)&&isWeak(k));
+  if(!keys.length){$('view').insertAdjacentHTML('afterbegin','<div class="note" id="noweak">No weak map items yet. Play a level first.</div>'); return;}
+  startBuild({id:'weak',tier:'core',targets:'ne',input:'type'},keys);}
+document.addEventListener('click',ev=>{
+  const t=ev.target, q=s=>t.closest(s);
+  if(q('#btnAcct')) return openAuth();
+  if(q('#btnAuthClose')){Cloud.recovery=false; return closeAuth();}
+  if(q('#btnSignOut')){ Cloud.flush().then(()=>Cloud.client.auth.signOut()).catch(()=>{}); return; }
+  const au=q('[data-au]'); if(au){authDo(au.dataset.au); return;}
+  if(q('#btnGuestYes')){Cloud.importGuest(); return home();}
+  if(q('#btnGuestNo')){Cloud.declineGuest(); return home();}
+  if(q('#btnHome')||q('#btnHome2')) return home();
+  if(q('#btnReset')){ if(confirm('Erase all saved progress for this trainer'+(Cloud&&Cloud.uid?' in your account, on every device':'')+'?')){S={items:{},best:{},names:S.names,theme:S.theme,themeSet:S.themeSet,days:{},resetAt:Date.now()}; save(); home();} return; }
+  const lv=q('[data-lvl]'); if(lv) return startBuild(LEVELS.find(l=>l.id===lv.dataset.lvl));
+  const md=q('[data-mode]'); if(md) return ({block:startBlock,name:startName,weak:startWeak,study:startStudy,sort:startSort})[md.dataset.mode]();
+  if(q('#btnTheme')){S.theme=S.theme==='light'?'dark':'light'; S.themeSet=true; save(); return renderHeader();}
+  if(q('#btnNames')){S.names=S.names==='common'?'gene':'common'; save(); return rerender();}
+  if(!G) return;
+  if(G.mode==='sort'){ const o=q('[data-opt]'); if(o&&!G.picked) return answerSort(o.dataset.opt); if(q('#btnNextS')) return nextSort(); return; }
+  if(G.mode==='build'){
+    const chip=q('[data-chip]'); if(chip) return answerBuild(chip.dataset.chip,true);
+    if(q('#btnSubmit')) return answerBuild($('ans').value,false);
+    if(q('#btnReveal')) return revealBuild();
+    if(q('#btnAgain')) return G.lv.id==='weak'?startWeak():startBuild(G.lv);
+    const n=q('.node.blank'), e=q('.elab.blank');
+    if(n){G.active='n:'+n.dataset.n; G.fb=['','']; return renderBuild(true);}
+    if(e){G.active='e:'+e.dataset.e; G.fb=['','']; return renderBuild(true);}
+    const shown=q('.elab'); if(shown){G.card='x:'+shown.dataset.e; return renderBuild(true);}
+  } else if(G.mode==='block'){
+    if(q('#btnCheckD')) return checkBlock();
+    if(q('#btnNextD')) return nextBlock();
+    const n=q('.node'); if(n&&!G.checked&&!n.classList.contains('locked')){const id=n.dataset.n, m=G.marks[id]; G.ph={mc:$('mc').value,xx:$('xx').value,xy:$('xy').value};
+      if(!m) G.marks[id]='up'; else if(m==='up') G.marks[id]='down'; else delete G.marks[id]; return renderBlock();}
+  } else if(G.mode==='study'){
+    const n=q('.node'), e=q('.elab'); if(n){G.card='n:'+n.dataset.n; return renderStudy();} if(e){G.card='e:'+e.dataset.e; return renderStudy();}
+  } else if(G.mode==='name'){
+    if(q('#btnSubmit')) return answerName($('ans').value,false);
+    if(q('#btnReveal')) return answerName('',true);
+    if(q('#btnNextQ')) return nextName();
+  }
+});
+document.addEventListener('keydown',ev=>{ if(ev.key!=='Enter'||!G) return;
+  if(ev.target.id==='ans'){ev.preventDefault(); return G.mode==='build'?answerBuild(ev.target.value,false):answerName(ev.target.value,false);}
+  const b=$('btnNextQ'); if(b){ev.preventDefault(); nextName();}
+});
+if(!canPersist) $('note').innerHTML='<div class="note">This browser is blocking local storage for this page, so scores and weak spots will not be saved between visits.</div>';
+window.ST={mergeState,cleanState,loadState,hasProgress,validKey,get Cloud(){return Cloud;},get KEYA(){return KEYA;},klassAns,klassText,LOCNAME,streakDays,mastery,todayKey,markOK,FULL,COMMON,LOC,KLASS,klassOf,ELAB,F,ACT,diffKeys,N,E,ENZ,DIS,CARDS,LEVELS,NODE_KEYS,ENZ_KEYS,norm,matchNode,matchEdge,matchCard,expected,get G(){return G;},get S(){return S;}};
+home();
+Cloud.init();
+</script>
+</body>
+</html>
