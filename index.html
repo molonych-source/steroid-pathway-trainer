@@ -783,7 +783,7 @@ function renderAcct(){const el=$('acct'); if(!el) return; if(!Cloud||!Cloud.clie
   el.innerHTML=Cloud.uid?`<span class="sub" id="acctWho">${esc(Cloud.email)}${st?' · '+st:''}</span><button class="ghost" id="btnSignOut">Sign out</button>`:`<button class="primary" id="btnAcct">Sign in to save progress</button>`;}
 function openAuth(){const el=$('authbox'); if(!el||!Cloud.client) return; const rec=Cloud.recovery;
   el.innerHTML=`<div class="panel" id="authpanel"><div class="bar"><div class="prompt">${rec?'Choose a new password':'Sign in to save your progress'}</div><span class="sp"></span><button class="ghost" id="btnAuthClose">${rec?'Cancel':'Play as guest'}</button></div>
-   <div class="sub">An account keeps your scores, streak and weak spots on every device. Only your email address and your game progress are stored. No patient data is ever involved.</div>
+   <div class="sub">An account keeps your scores, streak and weak spots on every device. Only your email address and your game progress are stored.</div>
    <div class="bar" style="margin-top:10px">${rec?'':'<input id="auEmail" type="email" autocomplete="email" placeholder="email address">'}<input id="auPass" type="password" autocomplete="${rec?'new-password':'current-password'}" placeholder="${rec?'new password':'password'}">
    ${rec?'<button class="primary" data-au="newpw">Save new password</button>':'<button class="primary" data-au="in">Sign in</button><button data-au="up">Create account</button><button data-au="google">Continue with Google</button><button class="ghost" data-au="reset">Forgot password</button>'}</div>
    <div class="fb" id="auMsg"></div></div>`; const f=$(rec?'auPass':'auEmail'); if(f) f.focus();}

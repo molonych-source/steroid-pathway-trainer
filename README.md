@@ -20,7 +20,7 @@ in saves progress to this site's own Supabase project, set by `SUPA_URL` and
 there is a publishable key, which is meant to be public: row-level security in
 `supabase_setup.sql` is what keeps each person's row private.
 
-An account stores an email address and game progress only. No patient data.
+An account stores an email address and game progress only.
 
 ## Source of truth
 

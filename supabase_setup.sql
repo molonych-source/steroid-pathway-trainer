@@ -6,7 +6,7 @@
 --
 -- One row per person. The whole progress record (scores, streak days, weak
 -- spots) is a single JSON document, because the game always reads and writes
--- it as a unit. No patient data and nothing clinical is stored.
+-- it as a unit.
 
 -- 1. The table -------------------------------------------------------------
 create table if not exists public.steroid_progress (
