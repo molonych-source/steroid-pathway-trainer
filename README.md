@@ -22,6 +22,15 @@ there is a publishable key, which is meant to be public: row-level security in
 
 An account stores an email address and game progress only.
 
+## Research mode
+
+Off unless a study participant enters a study code (or opens a link ending in
+`?study=CODE`) and accepts the consent screen. It then logs gameplay events,
+linked only to the code, to a locked `research` schema in the same Supabase
+project. Setup, enrollment, export and analysis notes:
+`2026-11-12-research-mode.md`. Database: `2026-11-12-research-setup.sql`.
+Codes: `tools/make_study_codes.py`.
+
 ## Source of truth
 
 This repository is the only copy. Edit `index.html` here, commit, and push to

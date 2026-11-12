@@ -129,6 +129,7 @@ svg text{font-family:inherit;fill:var(--ink)}
 .mol .txt{flex:1;min-width:220px;font-size:14px}
 .mol .txt b{font-size:15.5px}
 #result{font-size:22px}
+#rstat:empty{display:none}
 footer{margin-top:28px;color:var(--muted);font-size:11.5px;line-height:1.5;opacity:.8}
 </style>
 </head>
@@ -137,12 +138,13 @@ footer{margin-top:28px;color:var(--muted);font-size:11.5px;line-height:1.5;opaci
 <header>
   <div><h1>Steroid <em>Pathway</em> Trainer</h1><div class="sub">Rebuild adrenal steroidogenesis from memory, then break it one enzyme at a time.</div></div>
   <div class="stats" id="stats"></div>
-  <div class="bar"><span id="acct" class="bar"></span><button class="ghost" id="btnTheme">Light theme</button><button id="btnHome">Home</button></div>
+  <div class="bar"><span id="rstat" class="bar"></span><span id="acct" class="bar"></span><button class="ghost" id="btnTheme">Light theme</button><button id="btnHome">Home</button></div>
 </header>
 <div id="authbox"></div>
+<div id="rbox"></div>
 <div id="note"></div>
 <div id="view"></div>
-<footer>Estrogens, androstenediol, steroid classes with carbon counts and enzyme locations follow the Wikimedia Commons diagram File:Steroidogenesis.svg. Structures on the molecule cards: molecular formula and functional groups of the original 27 steroids, and molecular formula of the 4 added later, matched PubChem records on 2026-11-10. Independent source audit 2026-11-10 (Endotext, four Zotero reviews, Wikipedia diagram). Kept by decision after that audit: steroids downstream of a complete block are scored low by pathway logic even where no source lists them; the genitalia answers for isolated 17,20-lyase deficiency are inferred from the low androgens; and its normal cortisol and aldosterone are tested as unchanged. Block-round estrogen and androstenediol scoring: Endotext; Sarafoglou 2023, Al Alawi 2019, Cavarzere 2025 and Gurpinar Tosun 2024 (Zotero library); Blackett 1996 (PMID 15251547). PubMed cross-check 2026-11-10 (abstract level): PMID 21051590, 26960203, 38885296, 18821019, 21084398, 21802064, 16959841, 27626911, 24372086, 33123976. Fact source: Endotext, Congenital Adrenal Hyperplasia (Speiser &amp; White, updated January 20, 2026), Table 1 and Figure 1, plus the Androgen Biosynthesis sheet in the vault. The map layout never changes between levels, on purpose: position is part of the memory. Progress is stored in this browser, and in your account if you sign in. This is a study aid for clinicians and trainees, not clinical guidance. An account stores your email address, the basic profile Google shares if you sign in with Google, and your game progress. <a href="https://molonych-source.github.io/steroid-pathway-trainer/privacy.html">Privacy</a></footer>
+<footer>Estrogens, androstenediol, steroid classes with carbon counts and enzyme locations follow the Wikimedia Commons diagram File:Steroidogenesis.svg. Structures on the molecule cards: molecular formula and functional groups of the original 27 steroids, and molecular formula of the 4 added later, matched PubChem records on 2026-11-10. Independent source audit 2026-11-10 (Endotext, four Zotero reviews, Wikipedia diagram). Kept by decision after that audit: steroids downstream of a complete block are scored low by pathway logic even where no source lists them; the genitalia answers for isolated 17,20-lyase deficiency are inferred from the low androgens; and its normal cortisol and aldosterone are tested as unchanged. Block-round estrogen and androstenediol scoring: Endotext; Sarafoglou 2023, Al Alawi 2019, Cavarzere 2025 and Gurpinar Tosun 2024 (Zotero library); Blackett 1996 (PMID 15251547). PubMed cross-check 2026-11-10 (abstract level): PMID 21051590, 26960203, 38885296, 18821019, 21084398, 21802064, 16959841, 27626911, 24372086, 33123976. Fact source: Endotext, Congenital Adrenal Hyperplasia (Speiser &amp; White, updated January 20, 2026), Table 1 and Figure 1, plus the Androgen Biosynthesis sheet in the vault. The map layout never changes between levels, on purpose: position is part of the memory. Progress is stored in this browser, and in your account if you sign in. This is a study aid for clinicians and trainees, not clinical guidance. An account stores your email address, the basic profile Google shares if you sign in with Google, and your game progress. <a href="https://molonych-source.github.io/steroid-pathway-trainer/privacy.html">Privacy</a> · <a href="#" id="btnStudy">Study participant? Enter your study code</a></footer>
 </div>
 <script>
 'use strict';
@@ -543,7 +545,7 @@ function cardHTML(k){ if(!k) return ''; let [t,id]=k.split(':');
   if(t==='n') return `<div class="mol" id="card">${molSVG(id,[])}<div class="txt"><b>${esc(N[id].name)}</b><div>${klassText(id)}</div><div class="sub">${molTags(id)}${id==='chol'?'. Carbons are numbered on this card; every steroid on the map keeps this numbering.':''}</div></div></div>`;
   const e=E[id], keys=diffKeys(e.from,e.to);
   return `<div class="mol" id="card">${molSVG(e.from,keys)}<div class="arr">→</div>${molSVG(e.to,keys)}<div class="txt"><b>${esc(e.acc.map(x=>ENZ[x][1]).join('  or  '))}</b><div id="fullname">${e.acc.map(x=>esc(FULL[x])).join('<br>')}</div>${LOC[e.acc[0]]?`<div class="sub">Location in the cell: ${LOCNAME[LOC[e.acc[0]]]}</div>`:''}<div style="margin-top:4px">${ACT[id]||ACT[e.acc[0]]}</div><div class="sub">${esc(N[e.from].label)} → ${esc(N[e.to].label)}. Circles mark where the molecule changes. Schematic: stereochemistry is in the text, not the drawing.</div></div></div>`;}
-function startStudy(){G={mode:'study',card:null}; renderStudy();}
+function startStudy(){rStart('study'); G={mode:'study',card:null}; renderStudy();}
 function renderStudy(){const st={node:id=>({text:N[id].label,cls:'clicky'+(G.card==='n:'+id?' active':'')}),edge:id=>({text:ELAB(id),cls:'clicky'+(G.card==='e:'+id?' active':'')})};
   $('view').innerHTML=`<div class="panel"><div class="prompt" id="prompt">Explore the map</div><div class="sub">Click any steroid to see its structure, or any enzyme to see exactly what it changes.</div>${cardHTML(G.card)}</div><div class="mapbox">${mapSVG('adv',addFlow(st,()=>1))}</div>${legend()}`;}
 
@@ -596,6 +598,7 @@ function startBuild(lv,onlyKeys){
   let es=Object.values(E).filter(e=>inLv(e)&&!e.o.deco).map(e=>e.id);
   let slots=[]; if(lv.targets.includes('n')) slots=slots.concat(ns.map(i=>'n:'+i)); if(lv.targets.includes('e')) slots=slots.concat(es.map(i=>'e:'+i));
   if(onlyKeys) slots=onlyKeys;
+  rStart(lv.id,slots.length);
   G={mode:'build',lv,slots,done:{},tries:{},firstOK:0,active:slots[0],t0:Date.now(),
      tier:(onlyKeys?onlyKeys.map(k=>{const [t,i]=k.split(':');return (t==='n'?N[i]:E[i]).tier;}).sort((a,b)=>RANK[b]-RANK[a])[0]:lv.tier),
      bankN:shuffle(slots.filter(k=>k[0]==='n').map(k=>k.slice(2))),
@@ -623,7 +626,7 @@ function renderBuild(keep){
   const typed=keep&&$('ans')?$('ans').value:'';
   const left=G.slots.filter(k=>!G.done[k]).length, total=G.slots.length;
   if(!left) return finishBuild();
-  const k=G.active, isN=k[0]==='n';
+  const k=G.active, isN=k[0]==='n'; Research.prompt('b:'+k);
   let input;
   if(G.lv.input==='bank'){
     const chips=isN?G.bankN.filter(id=>!G.done['n:'+id]).map(id=>`<button class="chip" data-chip="${id}">${esc(N[id].label)}</button>`)
@@ -642,6 +645,7 @@ function answerBuild(val,isChip){
   if(isChip) ok = t==='n' ? val===id : E[id].acc.includes(val);
   else { if(!String(val).trim()) return; ok = t==='n' ? matchNode(id,val) : matchEdge(id,val); }
   const truth = t==='n' ? N[id].name : (E[id].acc.map(x=>ENZ[x][1]).join('  or  '));
+  rAnswer(G.lv.id,k,ok,(G.tries[k]||0)+1,isChip?'chip':'typed',ok?null:isChip?(t==='n'?'n:'+val:'z:'+val):rGiven(val,t==='n'?'n':'z'));
   if(ok){ if(!G.tries[k]){G.firstOK++; rec(k,true);} G.done[k]='ok'; G.card=k; G.fb=['good','Correct: '+esc(truth)]; nextActive(); }
   else {
     if(!G.tries[k]) rec(k,false);
@@ -656,10 +660,11 @@ function answerBuild(val,isChip){
   }
   renderBuild();
 }
-function revealBuild(){const k=G.active,[t,id]=k.split(':'); if(!G.tries[k]) rec(k,false); G.tries[k]=3; G.done[k]='rev'; G.card=k;
+function revealBuild(){const k=G.active,[t,id]=k.split(':'); rReveal(G.lv.id,k,(G.tries[k]||0)+1); if(!G.tries[k]) rec(k,false); G.tries[k]=3; G.done[k]='rev'; G.card=k;
   G.fb=['warn','Answer: '+esc(t==='n'?N[id].name:E[id].acc.map(x=>ENZ[x][1]).join('  or  '))]; nextActive(); renderBuild();}
 function finishBuild(){
   const total=G.slots.length, pct=Math.round(100*G.firstOK/total), secs=Math.round((Date.now()-G.t0)/1000);
+  if(!G.ended){G.ended=1; rEnd(G.lv.id,pct,total,secs);}
   if(G.lv.id!=='weak') setBest(G.lv.id,pct);
   const missed=G.slots.filter(k=>G.tries[k]);
   const st={node:id=>({text:N[id].label,cls:(G.tries['n:'+id]?'revealed':'')+' lit'}),edge:id=>({text:ELAB(id),cls:G.tries['e:'+id]?'revealed':''})};
@@ -673,7 +678,7 @@ function finishBuild(){
 const CORE_IDS=NODE_ORDER.concat(['adiol5','e1','e2','e3']);
 function startBlock(){
   const order=shuffle(DIS).sort((a,b)=>(isWeak('d:'+b.id)?1:0)-(isWeak('d:'+a.id)?1:0));
-  G={mode:'block',order,i:0,clean:0,marks:{},checked:null}; renderBlock();
+  rStart('block',order.length); G={mode:'block',order,i:0,clean:0,marks:{},checked:null}; renderBlock();
 }
 function blockFlow(d,ck){ if(!ck) return id=>d.block.includes(id)?0:1;
   const reach=new Set(['chol']); let grow=true;
@@ -683,7 +688,7 @@ function expected(d,id){return d.up.includes(id)?'up':d.down.includes(id)?'down'
 // Is mark m ('up' | 'down' | undefined) acceptable for expectation ex? upok = up or unmarked; dnok = down or unmarked.
 function markOK(ex,m){return ex==='opt'||(ex==='none'?!m:ex==='upok'?m!=='down':ex==='dnok'?m!=='up':m===ex);}
 function renderBlock(){
-  const d=G.order[G.i], ck=G.checked;
+  const d=G.order[G.i], ck=G.checked; Research.prompt('d:'+G.i+':'+d.id);
   const st={
    node(id){const m=G.marks[id], ex=expected(d,id); if(ex==='opt') return {text:N[id].label,cls:'locked'};
      let cls='clicky', arrow=m==='up'?'↑':m==='down'?'↓':'';
@@ -706,17 +711,21 @@ function checkBlock(){
   const d=G.order[G.i]; G.ph={mc:$('mc').value,xx:$('xx').value,xy:$('xy').value};
   let wrong=0; CORE_IDS.forEach(id=>{const ex=expected(d,id), m=G.marks[id]; if(!markOK(ex,m)) wrong++;}); const nw=wrong;
   const ck={mc:G.ph.mc===d.mc,xx:G.ph.xx===d.xx,xy:[].concat(d.xy).includes(G.ph.xy)}; ['mc','xx','xy'].forEach(k=>{if(!ck[k]) wrong++;});
-  ck.wrong=wrong; ck.nw=nw; ck.pw=wrong-nw; G.checked=ck; if(!wrong) G.clean++; rec('d:'+d.id,!wrong); renderBlock();
+  ck.wrong=wrong; ck.nw=nw; ck.pw=wrong-nw; G.checked=ck; if(!wrong) G.clean++; rec('d:'+d.id,!wrong);
+  rAnswer('block','d:'+d.id,!wrong,1,'map',null,{nw,pw:wrong-nw,mc:ck.mc,xx:ck.xx,xy:ck.xy,
+    up:CORE_IDS.filter(id=>G.marks[id]==='up'),down:CORE_IDS.filter(id=>G.marks[id]==='down'),
+    miss:CORE_IDS.filter(id=>!markOK(expected(d,id),G.marks[id]))});
+  renderBlock();
 }
 function nextBlock(){G.i++; G.marks={}; G.ph=null; G.checked=null;
-  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('block',pct);
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('block',pct); rEnd('block',pct,G.order.length);
     $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} deficiencies fully correct (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="block">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
   renderBlock();}
 
 /* ================= NAME THE DEFECT ================= */
-function startName(){G={mode:'name',order:shuffle(CARDS).sort((a,b)=>(isWeak('q:'+b.id)?1:0)-(isWeak('q:'+a.id)?1:0)),i:0,clean:0,tries:0,shown:null}; renderName();}
+function startName(){rStart('name',CARDS.length); G={mode:'name',order:shuffle(CARDS).sort((a,b)=>(isWeak('q:'+b.id)?1:0)-(isWeak('q:'+a.id)?1:0)),i:0,clean:0,tries:0,shown:null}; renderName();}
 function renderName(){
-  const c=G.order[G.i];
+  const c=G.order[G.i]; Research.prompt('q:'+G.i+':'+c.id);
   $('view').innerHTML=`<div class="panel"><div class="bar"><div class="sub">Which enzyme or gene is deficient?</div><span class="sp"></span><span class="sub">${G.i+1} / ${G.order.length}</span></div>
    <div class="prompt" id="prompt" style="margin-top:6px;font-weight:500;font-size:16.5px">${esc(c.clue)}</div>
    ${G.shown?`<div class="fb ${G.shown[0]}" id="fb">${G.shown[1]}</div><div class="bar" style="margin-top:8px"><button class="primary" id="btnNextQ">${G.i+1<G.order.length?'Next':'Finish'}</button></div>`
@@ -726,6 +735,9 @@ function renderName(){
 function answerName(val,reveal){
   const c=G.order[G.i];
   if(!reveal && !String(val).trim()) return;
+  if(G.shown) return;
+  if(reveal) rReveal('name','q:'+c.id,G.tries+1);
+  else { const ok=matchCard(c,val); rAnswer('name','q:'+c.id,ok,G.tries+1,'typed',ok?null:rGiven(val,'z')); }
   if(!reveal && matchCard(c,val)){ if(!G.tries){G.clean++; rec('q:'+c.id,true);} G.shown=['good','Correct: '+esc(c.name)]; }
   else { if(!G.tries) rec('q:'+c.id,false); G.tries++;
     if(reveal||G.tries>=2) G.shown=['warn','Answer: '+esc(c.name)];
@@ -733,7 +745,7 @@ function answerName(val,reveal){
   renderName();
 }
 function nextName(){G.i++; G.tries=0; G.shown=null; G.fb=null;
-  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('name',pct);
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('name',pct); rEnd('name',pct,G.order.length);
     $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} first-try (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="name">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
   renderName();}
 
@@ -742,14 +754,15 @@ function startSort(){
   const enz=['scc','hsd3b2','oh17','cyp21','b1','b2','aro'].map(id=>({key:'l:'+id,q:`Where in the cell is ${COMMON[id]} (${ENZ[id][0]})?`,opts:Object.values(LOCNAME),ans:[LOCNAME[LOC[id]]]}));
   const ster=Object.values(N).filter(n=>n.tier!=='adv'&&n.id!=='chol').map(n=>({key:'k:'+n.id,q:`Which class is ${n.label}?`,opts:['prog','mc','gc','and','est'].map(k=>KLASS[k]),ans:klassAns(n.id)}));
   const order=shuffle(enz.concat(ster)).sort((a,b)=>(isWeak(b.key)?1:0)-(isWeak(a.key)?1:0)).slice(0,15);
-  G={mode:'sort',order,i:0,clean:0,picked:null}; renderSort();}
-function renderSort(){const c=G.order[G.i];
+  rStart('sort',order.length); G={mode:'sort',order,i:0,clean:0,picked:null}; renderSort();}
+function renderSort(){const c=G.order[G.i]; Research.prompt('s:'+G.i+':'+c.key);
   $('view').innerHTML=`<div class="panel"><div class="bar"><div class="prompt" id="prompt">${esc(c.q)}</div><span class="sp"></span><span class="sub">${G.i+1} / ${G.order.length}</span></div>
    <div class="chips">${c.opts.map(o=>`<button class="chip" data-opt="${esc(o)}" ${G.picked?'disabled':''} style="${G.picked&&c.ans.includes(o)?'border-color:var(--good);font-weight:700':G.picked===o?'border-color:var(--bad)':''}">${esc(o)}</button>`).join('')}</div>
    ${G.picked?`<div class="fb ${c.ans.includes(G.picked)?'good':'bad'}" id="fb">${c.ans.includes(G.picked)?'Correct.'+(c.ans.length>1?' Either '+esc(c.ans.join(' or '))+' is accepted.':''):'Answer: '+esc(c.ans.join(' or '))}</div><div class="bar" style="margin-top:8px"><button class="primary" id="btnNextS">${G.i+1<G.order.length?'Next':'Finish'}</button></div>`:''}</div>`;}
-function answerSort(o){const c=G.order[G.i]; G.picked=o; const ok=c.ans.includes(o); if(ok) G.clean++; rec(c.key,ok); renderSort();}
+function answerSort(o){const c=G.order[G.i]; G.picked=o; const ok=c.ans.includes(o); if(ok) G.clean++; rec(c.key,ok);
+  rAnswer('sort',c.key,ok,1,'choice',null,{pick:c.opts.indexOf(o)}); renderSort();}
 function nextSort(){G.i++; G.picked=null;
-  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('sort',pct);
+  if(G.i>=G.order.length){const pct=Math.round(100*G.clean/G.order.length); setBest('sort',pct); rEnd('sort',pct,G.order.length);
     $('view').innerHTML=`<div class="panel"><div class="prompt" id="result">${G.clean} of ${G.order.length} correct (${pct}%)</div><div class="bar" style="margin-top:10px"><button class="primary" data-mode="sort">Again</button><button id="btnHome2">Home</button></div></div>`; return;}
   renderSort();}
 function rerender(){ if(!G) return; if(G.mode==='build') renderBuild(true); else if(G.mode==='study') renderStudy();
@@ -812,8 +825,110 @@ async function authDo(kind){const c=Cloud.client, email=(($('auEmail')||{}).valu
     else if(kind==='reset'){ if(!email) return msg('Enter your email address first.','bad'); r=await c.auth.resetPasswordForEmail(email,{redirectTo:back}); msg(r.error?r.error.message:'If that address has an account, a reset link is on its way.',r.error?'bad':'good'); }
     else if(kind==='newpw'){ if(pw.length<8) return msg('Use at least 8 characters.','bad'); r=await c.auth.updateUser({password:pw}); if(r.error) return msg(r.error.message,'bad'); Cloud.recovery=false; closeAuth(); }
   }catch(e){msg('Could not reach the sign-in service. You can keep playing as a guest.','bad');}}
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'&&Cloud.uid) Cloud.flush(); });
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'&&Cloud.uid) Cloud.flush();
+  if(Research.on){ if(document.visibilityState==='hidden') Research.hide(); else Research.show(); } });
+addEventListener('online',()=>{ if(Research.getQ().length) Research.flush(); });
 document.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&(ev.target.id==='auEmail'||ev.target.id==='auPass')){ev.preventDefault(); authDo(Cloud.recovery?'newpw':'in');} });
+
+/* ================= RESEARCH MODE ================= */
+// Off unless a study participant enters a study code. Logs gameplay events (never free text, never
+// a name or email) to research_log() in this site's Supabase project; see 2026-11-12-research-setup.sql.
+// Events queue in this browser first, so play works offline and nothing is lost on a dropped connection;
+// each event carries its own id, so a resend is ignored by the server instead of counted twice.
+const R_APP='r1';            // bump when the game's scoring or content changes, so analyses can split by version
+const R_CONSENT_VER='draft-1'; // bump whenever CONSENT_HTML changes
+// DRAFT: replace with the IRB-approved wording before enrolling anyone, then bump R_CONSENT_VER.
+const CONSENT_HTML=`<p><b>DRAFT consent text, not yet approved by an IRB.</b></p>
+ <p>You are invited to take part in a study of how fellows learn the adrenal steroid pathway. If you join, this
+ page records how you use the trainer: which items you answer, whether each answer is right, how long it takes,
+ which named steroid or enzyme you gave when an answer is wrong, and when you play. It does not record your
+ name, your email or anything you type that the game does not recognize. Records are linked only to your study
+ code. Taking part is voluntary and does not affect your evaluations. You can leave at any time with
+ "Leave study"; logging then stops.</p>`;
+const R_CODE_RE=/^[A-Z]{2,5}-[23456789ABCDEFGHJKMNPQRSTVWXYZ]{8}$/, RKEY=KEY+'.research', R_QMAX=5000, R_BATCH=100;
+const rUUID=()=>{ if(window.crypto&&crypto.randomUUID) return crypto.randomUUID();
+  const b=crypto.getRandomValues(new Uint8Array(16)); b[6]=b[6]&15|64; b[8]=b[8]&63|128;
+  const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join(''); return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;};
+const Research={
+  st:null,                 // {code, leaving}: leaving=true after "Leave study" until the withdraw event is delivered
+  mem:{q:[]},              // used only when this browser blocks storage
+  visit:rUUID(), seq:0, pk:null, t0:0, hidAt:0, timer:null, sending:false, backoff:10000, status:'', dropped:0, panel:false,
+  load(){try{const s=JSON.parse(localStorage.getItem(RKEY)); if(s&&R_CODE_RE.test(s.code)) this.st={code:s.code,leaving:!!s.leaving};}catch(e){} },
+  store(){ if(!canPersist) return; try{ this.st?localStorage.setItem(RKEY,JSON.stringify(this.st)):localStorage.removeItem(RKEY);}catch(e){} },
+  getQ(){ if(!canPersist) return this.mem.q; try{const q=JSON.parse(localStorage.getItem(RKEY+'.q')); return Array.isArray(q)?q:[];}catch(e){return [];} },
+  setQ(q){ if(!canPersist){this.mem.q=q; return;} try{ q.length?localStorage.setItem(RKEY+'.q',JSON.stringify(q)):localStorage.removeItem(RKEY+'.q'); }catch(e){ this.mem.q=q; } },
+  get on(){return !!(this.st&&!this.st.leaving);},
+  // Record one event. f: {mode,item,ok,attempt,latency_ms,given,input,detail}
+  log(type,f){ if(!this.on&&type!=='withdraw') return;
+    const ev=Object.assign({event_id:rUUID(),code:this.st.code,visit_id:this.visit,seq:this.seq++,client_ts:new Date().toISOString(),type,app_version:R_APP},f||{});
+    Object.keys(ev).forEach(k=>{if(ev[k]===undefined||ev[k]===null) delete ev[k];});
+    let q=this.getQ(); q.push(ev); if(q.length>R_QMAX){this.dropped+=q.length-R_QMAX; q=q.slice(q.length-R_QMAX);} this.setQ(q);
+    if(q.length>=50) this.flush(); else this.schedule(); },
+  schedule(ms){ clearTimeout(this.timer); this.timer=setTimeout(()=>this.flush(),ms||this.backoff); },
+  // Response time: measured from when a prompt is first shown, or from the previous attempt at it, minus time the page was hidden.
+  prompt(key){ if(key!==this.pk){this.pk=key; this.t0=performance.now();} },
+  lap(){ const ms=Math.max(0,Math.round(performance.now()-this.t0)); this.t0=performance.now(); return ms; },
+  hide(){ this.hidAt=performance.now(); this.log('hidden'); this.flush(true); },
+  show(){ if(this.hidAt){this.t0+=performance.now()-this.hidAt; this.hidAt=0;} this.log('visible'); },
+  async flush(unloading){
+    if(this.sending&&!unloading) return; const q=this.getQ(); if(!q.length) return;
+    const code=q[0].code, batch=q.filter(e=>e.code===code).slice(0,unloading?50:R_BATCH);
+    const body=JSON.stringify({p_code:code,p_events:batch.map(e=>{const o=Object.assign({},e); delete o.code; return o;})});
+    this.sending=true; let res=null;
+    try{ const r=await fetch(SUPA_URL+'/rest/v1/rpc/research_log',{method:'POST',keepalive:!!unloading,
+          headers:{'Content-Type':'application/json',apikey:SUPA_KEY},body});
+         if(r.ok) res=await r.json(); }catch(e){}
+    this.sending=false;
+    if(!res||!res.status){ this.status='waiting'; this.backoff=Math.min(this.backoff*2,300000); renderResearch(); if(this.getQ().length) this.schedule(); return; }
+    this.backoff=10000; const sent=new Set(batch.map(e=>e.event_id));
+    if(res.skipped) console.warn('Study mode: the server skipped '+res.skipped+' event(s) it could not accept.');
+    if(res.status==='ok'||res.status==='bad_request'){ this.setQ(this.getQ().filter(e=>!sent.has(e.event_id))); }
+    else { this.setQ(this.getQ().filter(e=>e.code!==code)); }   // unknown or withdrawn: nothing more for this code will be accepted
+    if(res.status==='ok'){ this.status='saved'; if(this.st&&this.st.leaving&&batch.some(e=>e.type==='withdraw')) this.end(''); }
+    else if(this.st&&this.st.code===code&&res.status==='withdrawn'){ this.end(this.st.leaving?'':'This study code has been withdrawn, so study mode is off.'); }
+    else if(this.st&&this.st.code===code&&res.status==='unknown'){ this.end('That study code was not recognized, so study mode is off. Check the code with your study coordinator.'); }
+    renderResearch(); if(this.getQ().length) this.schedule(1000); },
+  end(msg){ this.st=null; this.store(); this.status=''; this.panel=false; renderResearch(); if(msg) $('rbox').innerHTML=`<div class="note" id="rmsg">${esc(msg)}</div>`; },
+  join(raw){ const code=String(raw||'').toUpperCase().replace(/\s+/g,'');
+    if(!R_CODE_RE.test(code)) return rMsg('That does not look like a study code. Codes look like CHP-7K3M9QX2.','bad');
+    if(!$('rAgree')||!$('rAgree').checked) return rMsg('Tick the box to agree before joining.','bad');
+    this.st={code,leaving:false}; this.store(); this.panel=false; this.status='waiting';
+    this.log('consent',{detail:{ver:R_CONSENT_VER}});
+    this.log('visit_start',{detail:{dropped:this.dropped||undefined,screen:innerWidth<700?'small':'large'}});
+    this.flush(); renderResearch(); },
+  leave(){ if(!this.st) return; if(!confirm('Leave the study? Logging stops on this device. To remove what was already recorded, ask your study coordinator.')) return;
+    this.log('withdraw'); this.st.leaving=true; this.store(); this.flush(); renderResearch(); },
+  init(){ this.load(); const m=/[?&]study=([^&#]+)/.exec(location.search);
+    if(m){ const c=decodeURIComponent(m[1]).toUpperCase(); try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}
+      if(!this.on||this.st.code!==c){ this.panel=c; } }
+    if(this.on) this.log('visit_start',{detail:{screen:innerWidth<700?'small':'large'}});
+    else if(this.getQ().length) this.flush();   // deliver a pending withdraw or leftover events
+    renderResearch(); }
+};
+function rMsg(t,cls){const m=$('rMsg'); if(m){m.className='fb '+(cls||''); m.textContent=t;}}
+function renderResearch(){const b=$('rstat'), box=$('rbox'); if(!b||!box) return;
+  const R=Research, st={saved:'saved',waiting:'waiting to connect, kept on this device'}[R.status]||'';
+  b.innerHTML=R.on?`<span class="sub" id="rBadge" title="Study code ${esc(R.st.code)}">Study mode: ON${st?' · '+st:''}</span><button class="ghost" id="btnLeaveStudy">Leave study</button>`
+    :(R.st&&R.st.leaving?'<span class="sub">Leaving study…</span>':'');
+  if(R.panel!==false){ const pre=typeof R.panel==='string'?R.panel:'';
+    box.innerHTML=`<div class="panel" id="rpanel"><div class="bar"><div class="prompt">Join the research study</div><span class="sp"></span><button class="ghost" id="btnStudyClose">Not now</button></div>
+     <div class="explain">${CONSENT_HTML}</div>
+     ${canPersist?'':'<div class="note">This browser is blocking local storage, so study mode will switch off when you close this tab. Use a normal (not private) window.</div>'}
+     <div class="bar" style="margin-top:8px"><input id="rCode" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="study code, e.g. CHP-7K3M9QX2" value="${esc(pre)}">
+     <label class="sub"><input type="checkbox" id="rAgree"> I have read this and agree to take part</label><button class="primary" id="btnJoinStudy">Join study</button></div>
+     <div class="sub" style="margin-top:6px">Enter the same code on every device you use for the trainer.</div><div class="fb" id="rMsg"></div></div>`; }
+  else if($('rpanel')) box.innerHTML='';}
+// Hooks called from the game. Each is a no-op unless study mode is on.
+const rOn=()=>Research.on;
+function rStart(mode,n){ if(!rOn()) return; Research.pk=null; Research.log('mode_start',{mode,detail:{n}}); }
+function rEnd(mode,pct,n,secs){ if(rOn()) Research.log('round_end',{mode,detail:{pct,n,secs}}); }
+function rAnswer(mode,item,ok,attempt,input,given,detail){ if(!rOn()) return;
+  Research.log('answer',{mode,item,ok,attempt,latency_ms:Research.lap(),input,given,detail}); }
+function rReveal(mode,item,attempt){ if(rOn()) Research.log('reveal',{mode,item,attempt,latency_ms:Research.lap(),input:'reveal'}); }
+function rView(mode,item){ if(rOn()) Research.log('explore_view',{mode,item}); }
+// The recognized wrong answer: n:<steroid id> or z:<enzyme id>. Unrecognized free text is never stored.
+function rGiven(txt,prefer){const nk=NODE_KEYS[norm(txt)], ek=ENZ_KEYS[norm(txt)];
+  const n=nk?'n:'+nk:null, z=ek?'z:'+[...ek].sort()[0]:null; return prefer==='n'?(n||z):(z||n);}
 
 /* ================= EVENTS ================= */
 function startWeak(){const keys=Object.keys(S.items).filter(k=>/^[ne]:/.test(k)&&isWeak(k));
@@ -822,6 +937,10 @@ function startWeak(){const keys=Object.keys(S.items).filter(k=>/^[ne]:/.test(k)&
 document.addEventListener('click',ev=>{
   const t=ev.target, q=s=>t.closest(s);
   if(q('#btnAcct')) return openAuth();
+  if(q('#btnStudy')){ev.preventDefault(); Research.panel=true; renderResearch(); const c=$('rCode'); if(c) c.focus(); return;}
+  if(q('#btnStudyClose')){Research.panel=false; return renderResearch();}
+  if(q('#btnJoinStudy')) return Research.join(($('rCode')||{}).value);
+  if(q('#btnLeaveStudy')) return Research.leave();
   if(q('#btnAuthClose')){Cloud.recovery=false; return closeAuth();}
   if(q('#btnSignOut')){ Cloud.flush().then(()=>Cloud.client.auth.signOut()).catch(()=>{}); return; }
   const au=q('[data-au]'); if(au){authDo(au.dataset.au); return;}
@@ -843,14 +962,14 @@ document.addEventListener('click',ev=>{
     const n=q('.node.blank'), e=q('.elab.blank');
     if(n){G.active='n:'+n.dataset.n; G.fb=['','']; return renderBuild(true);}
     if(e){G.active='e:'+e.dataset.e; G.fb=['','']; return renderBuild(true);}
-    const shown=q('.elab'); if(shown){G.card='x:'+shown.dataset.e; return renderBuild(true);}
+    const shown=q('.elab'); if(shown){G.card='x:'+shown.dataset.e; rView(G.lv.id,G.card); return renderBuild(true);}
   } else if(G.mode==='block'){
     if(q('#btnCheckD')) return checkBlock();
     if(q('#btnNextD')) return nextBlock();
     const n=q('.node'); if(n&&!G.checked&&!n.classList.contains('locked')){const id=n.dataset.n, m=G.marks[id]; G.ph={mc:$('mc').value,xx:$('xx').value,xy:$('xy').value};
       if(!m) G.marks[id]='up'; else if(m==='up') G.marks[id]='down'; else delete G.marks[id]; return renderBlock();}
   } else if(G.mode==='study'){
-    const n=q('.node'), e=q('.elab'); if(n){G.card='n:'+n.dataset.n; return renderStudy();} if(e){G.card='e:'+e.dataset.e; return renderStudy();}
+    const n=q('.node'), e=q('.elab'); if(n){G.card='n:'+n.dataset.n; rView('study',G.card); return renderStudy();} if(e){G.card='e:'+e.dataset.e; rView('study',G.card); return renderStudy();}
   } else if(G.mode==='name'){
     if(q('#btnSubmit')) return answerName($('ans').value,false);
     if(q('#btnReveal')) return answerName('',true);
@@ -862,8 +981,9 @@ document.addEventListener('keydown',ev=>{ if(ev.key!=='Enter'||!G) return;
   const b=$('btnNextQ'); if(b){ev.preventDefault(); nextName();}
 });
 if(!canPersist) $('note').innerHTML='<div class="note">This browser is blocking local storage for this page, so scores and weak spots will not be saved between visits.</div>';
-window.ST={mergeState,cleanState,loadState,hasProgress,validKey,get Cloud(){return Cloud;},get KEYA(){return KEYA;},klassAns,klassText,LOCNAME,streakDays,mastery,todayKey,markOK,FULL,COMMON,LOC,KLASS,klassOf,ELAB,F,ACT,diffKeys,N,E,ENZ,DIS,CARDS,LEVELS,NODE_KEYS,ENZ_KEYS,norm,matchNode,matchEdge,matchCard,expected,get G(){return G;},get S(){return S;}};
+window.ST={Research,cleanState,loadState,hasProgress,validKey,get Cloud(){return Cloud;},get KEYA(){return KEYA;},klassAns,klassText,LOCNAME,streakDays,mastery,todayKey,markOK,FULL,COMMON,LOC,KLASS,klassOf,ELAB,F,ACT,diffKeys,N,E,ENZ,DIS,CARDS,LEVELS,NODE_KEYS,ENZ_KEYS,norm,matchNode,matchEdge,matchCard,expected,get G(){return G;},get S(){return S;}};
 home();
+Research.init();
 Cloud.init();
 </script>
 </body>
