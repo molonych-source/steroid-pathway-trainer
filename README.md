@@ -24,9 +24,16 @@ An account stores an email address and game progress only.
 
 ## Source of truth
 
-The working copy lives in the author's notes vault as
-`Generated Documents/Steroid Pathway Trainer.html`. This `index.html` is a
-published copy of that file: edit the vault copy, then copy it here.
+This repository is the only copy. Edit `index.html` here, commit, and push to
+`main`; the GitHub Actions workflow in `.github/workflows/pages.yml` publishes
+it to GitHub Pages within a minute.
+
+- `assets/`: the logo as SVG and PNG.
+- `preview.png` and `icon-180.png`: the link preview card and home-screen icon.
+- `tools/make_images.py`: regenerates the logo, preview card and icon.
+- `tools/check_live.py`: smoke check of the published site, including that a
+  signed-out browser cannot read the progress table.
+- `googlea06cf89ef8c2e172.html`: proves site ownership to Google. Keep it.
 
 ## Sources
 
