@@ -744,6 +744,7 @@ function rerender(){ if(!G) return; if(G.mode==='build') renderBuild(true); else
 
 /* ================= ACCOUNTS AND CLOUD SAVE ================= */
 // Optional. Guest play needs none of this and works offline from a file. Accounts are offered only when the page is served over https.
+const EMAIL_SIGNUP=false;   // set to true once the Supabase project has a mail service (custom SMTP); until then confirmation emails cannot reach the public
 const SUPA_URL='https://zbvubrdyxozvbdmdbezx.supabase.co', SUPA_KEY='sb_publishable_prIg7nKQCiH-DhzAwUHVWA_WkA0Leal',   // this site's own Supabase project; the publishable key is meant to be public, row-level security does the protecting
       SUPA_LIB='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.0', TABLE='steroid_progress';
 Cloud={client:null,uid:null,email:'',status:'',offer:false,timer:null,recovery:false,
@@ -785,7 +786,7 @@ function openAuth(){const el=$('authbox'); if(!el||!Cloud.client) return; const 
   el.innerHTML=`<div class="panel" id="authpanel"><div class="bar"><div class="prompt">${rec?'Choose a new password':'Sign in to save your progress'}</div><span class="sp"></span><button class="ghost" id="btnAuthClose">${rec?'Cancel':'Play as guest'}</button></div>
    <div class="sub">An account keeps your scores, streak and weak spots on every device. Only your email address and your game progress are stored.</div>
    <div class="bar" style="margin-top:10px">${rec?'':'<input id="auEmail" type="email" autocomplete="email" placeholder="email address">'}<input id="auPass" type="password" autocomplete="${rec?'new-password':'current-password'}" placeholder="${rec?'new password':'password'}">
-   ${rec?'<button class="primary" data-au="newpw">Save new password</button>':'<button class="primary" data-au="in">Sign in</button><button data-au="up">Create account</button><button data-au="google">Continue with Google</button><button class="ghost" data-au="reset">Forgot password</button>'}</div>
+   ${rec?'<button class="primary" data-au="newpw">Save new password</button>':'<button class="primary" data-au="in">Sign in</button>'+(EMAIL_SIGNUP?'<button data-au="up">Create account</button>':'')+'<button data-au="google">Continue with Google</button><button class="ghost" data-au="reset">Forgot password</button>'}</div>
    ${rec?'':'<div class="sub" style="margin-top:8px">Google will say you are continuing to "'+new URL(SUPA_URL).host+'". That is the service that stores accounts for this site.</div>'}
    <div class="fb" id="auMsg"></div></div>`; const f=$(rec?'auPass':'auEmail'); if(f) f.focus();}
 function closeAuth(){const el=$('authbox'); if(el) el.innerHTML='';}
