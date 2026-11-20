@@ -447,6 +447,34 @@ function rec(key,ok){const it=S.items[key]=S.items[key]||{seen:0,miss:0,streak:0
 const isWeak=k=>{const it=S.items[k]; return !!it && it.miss>0 && it.streak<2;};
 function setBest(id,pct){ if(!(id in S.best) || pct>S.best[id]) S.best[id]=pct; save(); }
 
+/* ================= RESEARCH STUDY (opt-in: open the site with ?study=1) ================= */
+// An anonymous code and active seconds per day, for linking a pre and a post survey. Kept in this browser only, under its own key:
+// never sent to the server, never tied to an account, and untouched by Reset progress or by signing in and out.
+// Active means the tab is visible and there was a click, key, scroll, touch or pointer move in the last 90 seconds.
+const STUDY_KEY=KEY+'.study', STUDY_ABC='ABCDEFGHJKMNPQRSTUVWXYZ23456789', STUDY_TICK=5, STUDY_IDLE=90000;
+const Study={on:false,mem:null,last:Date.now(),
+  clean(raw){ if(!raw||typeof raw!=='object'||!/^[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/.test(raw.code)) return null;
+    const o={code:raw.code,since:nat(raw.since,1e15),days:{}}, d=raw.days;
+    if(d&&typeof d==='object') Object.keys(d).forEach(k=>{if(/^\d{4}-\d{2}-\d{2}$/.test(k)) o.days[k]=nat(d[k],86400);}); return o;},
+  read(){ if(!canPersist) return this.mem; let raw=null; try{raw=JSON.parse(localStorage.getItem(STUDY_KEY));}catch(e){} return this.clean(raw); },
+  write(o){ this.mem=o; if(!canPersist) return; try{localStorage.setItem(STUDY_KEY,JSON.stringify(o));}catch(e){} },
+  enroll(){ let o=this.read(); if(!o){ const r=new Uint32Array(8); crypto.getRandomValues(r); let c='';
+      r.forEach((v,i)=>{c+=STUDY_ABC[v%STUDY_ABC.length]; if(i===3) c+='-';}); o={code:c,since:Date.now(),days:{}}; this.write(o);} this.on=true; return o; },
+  secs(o){return Object.values(o.days).reduce((a,b)=>a+b,0);},
+  activeDays(o){return Object.keys(o.days).filter(k=>o.days[k]>0).length;},
+  // Read, add, write on every tick, so two open tabs add to one total instead of overwriting each other.
+  tick(){ if(!this.on||document.visibilityState!=='visible'||Date.now()-this.last>STUDY_IDLE) return; const o=this.read(); if(!o) return;
+    const k=todayKey(); o.days[k]=Math.min(86400,(o.days[k]||0)+STUDY_TICK); this.write(o); this.show(o);},
+  show(o){const m=$('studyMin'), d=$('studyDays'); if(m) m.textContent=Math.floor(this.secs(o)/60); if(d) d.textContent=this.activeDays(o);},
+  box(){ const o=this.on?this.read():null; if(!o) return '';
+    return `<div class="note" id="studyBox"><b>Research study</b> · code <b id="studyCode">${o.code}</b> · <b id="studyMin">${Math.floor(this.secs(o)/60)}</b> active minutes · <b id="studyDays">${this.activeDays(o)}</b> active days <button class="ghost" id="btnStudyCopy">Copy</button>`+
+      `<div class="sub">Enter the code in the survey. Keep using this same browser on this device, so your minutes stay with this code.${canPersist?'':' This browser is blocking storage, so the code and minutes will be lost when the page closes: please use a normal, not private, window.'}</div></div>`;}
+};
+['pointerdown','pointermove','keydown','wheel','touchstart','scroll'].forEach(t=>addEventListener(t,()=>{Study.last=Date.now();},{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') Study.last=Date.now(); });
+try{ if(new URLSearchParams(location.search).has('study')) Study.enroll(); else Study.on=!!Study.read(); }catch(e){}
+setInterval(()=>Study.tick(),STUDY_TICK*1000);
+
 /* ================= MAP RENDERING ================= */
 const CX=c=>88+c*204, CY=r=>40+r*86, NW=140, NH=38;
 function clip(p,q){const dx=q[0]-p[0], dy=q[1]-p[1]; const t=Math.min(dx?(NW/2)/Math.abs(dx):1e9, dy?(NH/2)/Math.abs(dy):1e9);
@@ -579,6 +607,7 @@ function home(){
    </div>
    <div class="weak" style="margin-top:10px">${weak.length?'Currently weak: '+weak.map(labelOf).join(', '):'No misses recorded yet.'}
    &nbsp;<button class="ghost" id="btnReset">Reset progress</button></div>`;
+  $('view').insertAdjacentHTML('afterbegin',Study.box());
   if(Cloud&&Cloud.offer) $('view').insertAdjacentHTML('afterbegin','<div class="note" id="guestOffer">This browser has guest progress that is not in your account. <button id="btnGuestYes">Add it to my account</button> <button class="ghost" id="btnGuestNo">No thanks</button></div>');
 }
 function labelOf(k){const [t,id]=k.split(':');
@@ -828,6 +857,9 @@ document.addEventListener('click',ev=>{
   if(q('#btnGuestYes')){Cloud.importGuest(); return home();}
   if(q('#btnGuestNo')){Cloud.declineGuest(); return home();}
   if(q('#btnHome')||q('#btnHome2')) return home();
+  if(q('#btnStudyCopy')){ const o=Study.read(), b=$('btnStudyCopy'); if(!o) return;
+    const t=`Code ${o.code}, ${Math.floor(Study.secs(o)/60)} active minutes, ${Study.activeDays(o)} active days`;
+    Promise.resolve().then(()=>navigator.clipboard.writeText(t)).then(()=>{b.textContent='Copied';},()=>{b.textContent='Copy failed: select the code above';}); return; }
   if(q('#btnReset')){ if(confirm('Erase all saved progress for this trainer'+(Cloud&&Cloud.uid?' in your account, on every device':'')+'?')){S={items:{},best:{},names:S.names,theme:S.theme,themeSet:S.themeSet,days:{},resetAt:Date.now()}; save(); home();} return; }
   const lv=q('[data-lvl]'); if(lv) return startBuild(LEVELS.find(l=>l.id===lv.dataset.lvl));
   const md=q('[data-mode]'); if(md) return ({block:startBlock,name:startName,weak:startWeak,study:startStudy,sort:startSort})[md.dataset.mode]();
@@ -862,7 +894,7 @@ document.addEventListener('keydown',ev=>{ if(ev.key!=='Enter'||!G) return;
   const b=$('btnNextQ'); if(b){ev.preventDefault(); nextName();}
 });
 if(!canPersist) $('note').innerHTML='<div class="note">This browser is blocking local storage for this page, so scores and weak spots will not be saved between visits.</div>';
-window.ST={mergeState,cleanState,loadState,hasProgress,validKey,get Cloud(){return Cloud;},get KEYA(){return KEYA;},klassAns,klassText,LOCNAME,streakDays,mastery,todayKey,markOK,FULL,COMMON,LOC,KLASS,klassOf,ELAB,F,ACT,diffKeys,N,E,ENZ,DIS,CARDS,LEVELS,NODE_KEYS,ENZ_KEYS,norm,matchNode,matchEdge,matchCard,expected,get G(){return G;},get S(){return S;}};
+window.ST={Study,mergeState,cleanState,loadState,hasProgress,validKey,get Cloud(){return Cloud;},get KEYA(){return KEYA;},klassAns,klassText,LOCNAME,streakDays,mastery,todayKey,markOK,FULL,COMMON,LOC,KLASS,klassOf,ELAB,F,ACT,diffKeys,N,E,ENZ,DIS,CARDS,LEVELS,NODE_KEYS,ENZ_KEYS,norm,matchNode,matchEdge,matchCard,expected,get G(){return G;},get S(){return S;}};
 home();
 Cloud.init();
 </script>
